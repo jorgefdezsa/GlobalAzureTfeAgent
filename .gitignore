@@ -1,0 +1,8 @@
+.azure
+.idea/
+.vs/
+bin/
+obj/
+*.user
+*.log
+.DS_Store

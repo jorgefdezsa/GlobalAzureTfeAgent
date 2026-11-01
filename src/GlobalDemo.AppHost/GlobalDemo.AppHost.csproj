@@ -1,0 +1,18 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.4">
+
+  <ItemGroup>
+    <ProjectReference Include="..\GlobalDemo.Api\GlobalDemo.Api.csproj" />
+    <ProjectReference Include="..\GlobalDemo.Mcp\GlobalDemo.Mcp.csproj" />
+    <ProjectReference Include="..\GlobalDemo.Agent\GlobalDemo.Agent.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>a65fe1e4-765a-423f-a2ff-49daa7a7ef5a</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

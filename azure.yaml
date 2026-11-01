@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+infra:
+    provider: microsoft.foundry
+name: global-azure-tfe
+services:
+    asistente-vuelos:
+        container:
+            resources:
+                cpu: "0.5"
+                memory: 1Gi
+        docker:
+            remoteBuild: true
+        env:
+            AZURE_AI_MODEL_DEPLOYMENT_NAME: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+            # URL pública del servidor MCP (o del AI Gateway): azd env set MCP_URL https://.../mcp
+            MCP_URL: ${MCP_URL}
+            MCP_SUBSCRIPTION_KEY: ${MCP_SUBSCRIPTION_KEY}
+        host: azure.ai.agent
+        kind: hosted
+        language: docker
+        name: asistente-vuelos
+        project: src/GlobalDemo.AgentHosted
+        protocols:
+            - protocol: responses
+              version: 2.0.0
+        startupCommand: dotnet GlobalDemo.AgentHosted.dll
+        uses:
+            - proj-globaltfe
+    proj-globaltfe:
+        endpoint: https://globalazureagent.services.ai.azure.com/api/projects/proj-globaltfe
+        host: azure.ai.project
