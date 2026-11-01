@@ -133,6 +133,21 @@ Detalles a tener en cuenta:
   (sí aparecen como `function_call` en las respuestas y en las trazas). Para verlas como recurso del proyecto habría que registrarlas
   en un **Toolbox** de Foundry (pendiente).
 
+## CI/CD (GitHub Actions)
+
+- `build.yml`: compila la solución en cada PR y push a `main`. Es un check obligatorio para fusionar.
+- `deploy-mcp.yml`: al fusionar a `main` con cambios en el MCP, construye la imagen en ACR y actualiza la Container App.
+- `deploy-agent.yml`: al fusionar a `main` con cambios en el agente hospedado, ejecuta `azd deploy`.
+
+Ambos despliegues autentican con OIDC (sin secretos). Preparación única, con `az login` y `gh auth login` hechos:
+
+```bash
+bash deploy/setup-github-cd.sh
+```
+
+Crea la identidad en Entra ID con permisos sobre el grupo de recursos y la cuenta de Foundry, y define las variables del
+repositorio. La clave del MCP no se guarda en GitHub: el workflow del agente la lee de la Container App en cada ejecución.
+
 ## Seguridad
 
 - La clave de AviationStack nunca va en el repositorio: user-secrets en local, secreto de Container Apps en Azure.

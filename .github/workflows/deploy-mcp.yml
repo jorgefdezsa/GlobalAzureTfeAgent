@@ -1,0 +1,44 @@
+name: deploy-mcp
+
+# Construye la imagen del MCP en ACR y actualiza la Container App. Se lanza al fusionar a main
+# cuando cambia el MCP o lo que usa, o a mano.
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/GlobalDemo.Mcp/**
+      - src/GlobalDemo.Aviation/**
+      - src/GlobalDemo.ServiceDefaults/**
+      - .github/workflows/deploy-mcp.yml
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-mcp
+  cancel-in-progress: false
+
+env:
+  RG: GlobalAzureTenerife
+  APP: mcp-aviation
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Build de la imagen en ACR
+        working-directory: src
+        run: |
+          az acr build -r "${{ vars.ACR_NAME }}" -t "mcp:${GITHUB_SHA::7}" -f GlobalDemo.Mcp/Dockerfile .
+      - name: Actualizar la Container App
+        run: |
+          az containerapp update -n "$APP" -g "$RG" \
+            --image "${{ vars.ACR_NAME }}.azurecr.io/mcp:${GITHUB_SHA::7}"

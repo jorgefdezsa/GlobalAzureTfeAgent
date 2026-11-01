@@ -1,0 +1,56 @@
+name: deploy-agent
+
+# Despliega el agente hospedado en Foundry con azd. Se lanza al fusionar a main cuando cambia el agente,
+# o a mano. El entorno de azd se reconstruye desde la variable AZD_ENV (sin secretos); la clave del MCP
+# se lee de la Container App en cada ejecución.
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/GlobalDemo.AgentHosted/**
+      - azure.yaml
+      - .github/workflows/deploy-agent.yml
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-agent
+  cancel-in-progress: false
+
+env:
+  AZD_ENV_NAME: netcoreconf-dev
+  RG: GlobalAzureTenerife
+  APP: mcp-aviation
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Azure/setup-azd@v2
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Login de azd
+        run: |
+          azd auth login --client-id "${{ vars.AZURE_CLIENT_ID }}" \
+            --federated-credential-provider github --tenant-id "${{ vars.AZURE_TENANT_ID }}"
+      - name: Reconstruir el entorno de azd
+        env:
+          AZD_ENV: ${{ vars.AZD_ENV }}
+        run: |
+          mkdir -p ".azure/$AZD_ENV_NAME"
+          printf '{"version":1,"defaultEnvironment":"%s"}\n' "$AZD_ENV_NAME" > .azure/config.json
+          printf '%s\n' "$AZD_ENV" > ".azure/$AZD_ENV_NAME/.env"
+          KEY="$(az containerapp secret show -n "$APP" -g "$RG" --secret-name mcp-key --query value -o tsv)"
+          echo "::add-mask::$KEY"
+          printf 'MCP_SUBSCRIPTION_KEY="%s"\n' "$KEY" >> ".azure/$AZD_ENV_NAME/.env"
+      - name: Desplegar el agente
+        run: |
+          azd extension install azure.ai.agents
+          azd deploy --no-prompt
