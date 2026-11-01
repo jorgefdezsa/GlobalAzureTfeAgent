@@ -137,6 +137,8 @@ Detalles a tener en cuenta:
 
 - La clave de AviationStack nunca va en el repositorio: user-secrets en local, secreto de Container Apps en Azure.
 - `/mcp` se protege con una clave opcional (`Mcp:ApiKey`, comparación en tiempo constante). Sin configurarla, queda abierto (uso local).
+- `/api` (GlobalDemo.Api) se protege igual con `Api:ApiKey` y la misma cabecera. Sin configurarla, queda abierto (uso local).
+- Para consultar la clave del MCP publicado: `azd env get-value MCP_SUBSCRIPTION_KEY` (no la pegues en el repositorio ni en chats).
 - La autenticación con Foundry usa Entra ID, sin claves de API.
 
 ## Notas

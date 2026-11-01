@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using GlobalDemo.Aviation;
 using GlobalDemo.Aviation.Models;
 
@@ -11,6 +13,27 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 app.MapOpenApi();
+
+// Si hay Api:ApiKey (p. ej. publicada en Azure), /api exige la cabecera Ocp-Apim-Subscription-Key.
+// Sin clave configurada (local) no se pide nada.
+var apiKey = app.Configuration["Api:ApiKey"];
+if (!string.IsNullOrEmpty(apiKey))
+{
+    var expected = Encoding.UTF8.GetBytes(apiKey);
+    app.Use(async (ctx, next) =>
+    {
+        if (ctx.Request.Path.StartsWithSegments("/api"))
+        {
+            var sent = Encoding.UTF8.GetBytes(ctx.Request.Headers["Ocp-Apim-Subscription-Key"].ToString());
+            if (!CryptographicOperations.FixedTimeEquals(sent, expected))
+            {
+                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
+        }
+        await next();
+    });
+}
 
 var api = app.MapGroup("/api");
 
