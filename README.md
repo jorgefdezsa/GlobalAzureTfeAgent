@@ -19,6 +19,7 @@ Usuario ──► Agente (Agent Framework) ──► MCP (6 tools) ──► Glo
 | `src/GlobalDemo.Mcp` | Servidor MCP (Streamable HTTP en `/mcp`) con las 6 tools de vuelos. |
 | `src/GlobalDemo.Agent` | Agente local con endpoint `/chat`; consume el MCP. Es el que corre con Aspire. |
 | `src/GlobalDemo.AgentHosted` | El mismo agente empaquetado como Foundry Hosted Agent (protocolo Responses, puerto 8088). |
+| `src/GlobalDemo.Control` | Panel web de la demo (backend .NET + frontend React): chat con el agente, traza de cada llamada y bloqueos del AI Gateway. |
 | `src/GlobalDemo.DemoClient` | Consola de la demo: llama al agente hospedado con streaming y pinta tool calls, resultados y bloqueos en vivo. |
 | `src/GlobalDemo.AppHost` | Orquestación Aspire (api, mcp, agent). |
 | `src/GlobalDemo.ServiceDefaults` | Telemetría, health checks y service discovery comunes. |
@@ -160,6 +161,24 @@ El bloqueo por tool lee el nombre de la tool del `tools/call` (JSON-RPC) en la p
 
 Con el bloqueo activo, la siguiente pregunta muestra `[TOOL]` y `[BLOCKED]` en rojo sin redesplegar, y el modelo explica el bloqueo.
 Ensáyalo antes de la demo: el tiempo de propagación del bloqueo no está documentado. API Management Basic v2 se factura por horas: bórralo al terminar.
+
+## Panel de control (React)
+
+Una interfaz web para la demo: chat con el agente (streaming), traza de la última llamada, interruptores del AI Gateway (todo el
+servidor o cada tool) y «Probar sin agente», con el registro de peticiones.
+
+```bash
+bash deploy/run-control.sh        # http://127.0.0.1:5200
+```
+
+- El backend (`src/GlobalDemo.Control`) habla con el hosted agent y con API Management usando tu `az login`, y lee la configuración de `azd`.
+  Ninguna clave ni token llega al navegador, y solo escucha en localhost.
+- El frontend está en `src/GlobalDemo.Control/web` (Vite + React + TypeScript). El script lo compila a `wwwroot` la primera vez;
+  para desarrollar: `npm run dev` en esa carpeta (proxy de `/api` al 5200).
+- «Vía AI Gateway / Directo al backend» solo afecta a «Probar sin agente»: el agente siempre pasa por el gateway. En modo directo
+  la llamada llega al MCP de Container Apps con la clave del cliente y debe dar 401, porque el backend está cerrado.
+- Los interruptores escriben las named values `mcp-blocked` y `mcp-blocked-tools` de API Management, igual que `deploy/gateway-switch.sh`;
+  el panel refresca el estado cada pocos segundos, así que también refleja cambios hechos desde el terminal.
 
 ## Seguridad
 

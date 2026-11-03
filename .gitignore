@@ -6,3 +6,5 @@ obj/
 *.user
 *.log
 .DS_Store
+node_modules/
+src/GlobalDemo.Control/wwwroot/
