@@ -30,8 +30,11 @@ echo "==> $APIM | servidor MCP $API | ACR $ACR"
 echo "==> Named values en API Management"
 az apim nv create -g "$RG" -n "$APIM" --named-value-id mcp-gateway-key --display-name mcp-gateway-key --value "$GATEWAY_KEY" --secret true >/dev/null 2>&1
 az apim nv create -g "$RG" -n "$APIM" --named-value-id mcp-backend-key --display-name mcp-backend-key --value "$BACKEND_KEY" --secret true >/dev/null 2>&1
-az apim nv show -g "$RG" -n "$APIM" --named-value-id mcp-blocked >/dev/null 2>&1 \
-  || az apim nv create -g "$RG" -n "$APIM" --named-value-id mcp-blocked --display-name mcp-blocked --value false >/dev/null 2>&1
+for nv in mcp-blocked:false mcp-blocked-tools:none; do
+  id="${nv%%:*}"; default="${nv#*:}"
+  az apim nv show -g "$RG" -n "$APIM" --named-value-id "$id" >/dev/null 2>&1 \
+    || az apim nv create -g "$RG" -n "$APIM" --named-value-id "$id" --display-name "$id" --value "$default" >/dev/null 2>&1
+done
 
 echo "==> Imagen del MCP y clave de backend"
 (cd src && az acr build -r "$ACR" -t "mcp:$TAG" -f GlobalDemo.Mcp/Dockerfile .)

@@ -3,7 +3,10 @@
       Policy del servidor MCP en API Management (AI Gateway). Requiere dos named values secretos:
         mcp-gateway-key  clave que presentan los clientes en x-mcp-key (la de la conexión de la tool y la del agente)
         mcp-backend-key  clave que solo conocen el gateway y el MCP de Container Apps (x-backend-key)
-      y el interruptor mcp-blocked (true bloquea con 403). No leer context.Response.Body: rompe el streaming de MCP.
+      y dos interruptores:
+        mcp-blocked        true bloquea todo el servidor MCP con 403
+        mcp-blocked-tools  lista separada por comas de tools bloqueadas con 403 (p. ej. buscar_vuelo,estado_llegada); none = ninguna
+      No leer context.Response.Body: rompe el streaming de MCP. El cuerpo de la petición se lee con preserveContent.
     -->
     <inbound>
         <base />
@@ -18,6 +21,32 @@
                         <value>application/json</value>
                     </set-header>
                     <set-body>{"error":{"code":"AccessBlockedByGateway","message":"Access to server 'aviation-mcp' is blocked."}}</set-body>
+                </return-response>
+            </when>
+        </choose>
+        <set-variable name="blockedTool" value='@{
+            if (context.Request.Method != "POST") { return ""; }
+            var list = "{{mcp-blocked-tools}}".Replace(" ", "").ToLowerInvariant();
+            if (list == "" || list == "none") { return ""; }
+            JObject body = context.Request.Body.As&lt;JObject&gt;(preserveContent: true);
+            if (body == null) { return ""; }
+            if ((string)body["method"] != "tools/call") { return ""; }
+            var name = (string)body.SelectToken("params.name");
+            if (name == null) { return ""; }
+            return ("," + list + ",").Contains("," + name.ToLowerInvariant() + ",") ? name : "";
+        }' />
+        <choose>
+            <when condition='@((string)context.Variables["blockedTool"] != "")'>
+                <return-response>
+                    <set-status code="403" reason="Forbidden" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>@{
+                        return new JObject(new JProperty("error", new JObject(
+                            new JProperty("code", "AccessBlockedByGateway"),
+                            new JProperty("message", "Tool " + (string)context.Variables["blockedTool"] + " of server aviation-mcp is blocked.")))).ToString();
+                    }</set-body>
                 </return-response>
             </when>
         </choose>

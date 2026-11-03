@@ -148,10 +148,15 @@ Consola ──► Hosted agent ──► API Management (AI Gateway) ──► M
 - El bloqueo es una policy en el servidor MCP de API Management (`deploy/gateway-policy.xml`) que devuelve 403 si el named value `mcp-blocked` vale `true`. La misma policy valida la clave del cliente e inyecta la de backend; se aplica con `bash deploy/lock-backend.sh`.
 
 ```bash
-dotnet run --project src/GlobalDemo.DemoClient                    # conversación; verás [TOOL] y [RESULT]
-az apim nv update -g GlobalAzureTenerife -n apim-globaltfe --named-value-id mcp-blocked --value true    # bloquear
-az apim nv update -g GlobalAzureTenerife -n apim-globaltfe --named-value-id mcp-blocked --value false   # desbloquear
+dotnet run --project src/GlobalDemo.DemoClient              # conversación; verás [TOOL] y [RESULT]
+bash deploy/gateway-switch.sh all on                         # bloquea todo el servidor MCP (403)
+bash deploy/gateway-switch.sh all off
+bash deploy/gateway-switch.sh tools buscar_vuelo,estado_llegada   # bloquea solo esas tools; el resto siguen
+bash deploy/gateway-switch.sh tools none
+bash deploy/gateway-switch.sh status
 ```
+
+El bloqueo por tool lee el nombre de la tool del `tools/call` (JSON-RPC) en la policy: las demás tools y `tools/list` siguen funcionando. Si cambias la policy, aplícala con `bash deploy/apply-gateway-policy.sh`.
 
 Con el bloqueo activo, la siguiente pregunta muestra `[TOOL]` y `[BLOCKED]` en rojo sin redesplegar, y el modelo explica el bloqueo.
 Ensáyalo antes de la demo: el tiempo de propagación del bloqueo no está documentado. API Management Basic v2 se factura por horas: bórralo al terminar.
