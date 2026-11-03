@@ -4,6 +4,7 @@
     <ProjectReference Include="..\GlobalDemo.Api\GlobalDemo.Api.csproj" />
     <ProjectReference Include="..\GlobalDemo.Mcp\GlobalDemo.Mcp.csproj" />
     <ProjectReference Include="..\GlobalDemo.Agent\GlobalDemo.Agent.csproj" />
+    <ProjectReference Include="..\GlobalDemo.Control\GlobalDemo.Control.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
