@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using GlobalDemo.Aviation;
+using ModelContextProtocol.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,15 +9,16 @@ builder.AddServiceDefaults();
 builder.Services.AddAviation();
 builder.Services
     .AddMcpServer()
-    .WithHttpTransport()
+    // Sin estado: el agente abre una sesión MCP por llamada y detrás del gateway puede haber varias réplicas.
+    .WithHttpTransport(o => o.SessionMode = HttpServerSessionMode.Stateless)
     .WithToolsFromAssembly();
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-// Si hay Mcp:ApiKey (p. ej. publicado en Container Apps), /mcp exige la cabecera Ocp-Apim-Subscription-Key,
-// la misma que usará API Management después. Sin clave configurada (local) no se pide nada.
+// Si hay Mcp:ApiKey (p. ej. publicado en Container Apps), /mcp exige la clave en x-mcp-key (la que usa la conexión de la
+// tool en Foundry) o en Ocp-Apim-Subscription-Key. Sin clave configurada (local) no se pide nada.
 var apiKey = app.Configuration["Mcp:ApiKey"];
 if (!string.IsNullOrEmpty(apiKey))
 {
@@ -25,7 +27,9 @@ if (!string.IsNullOrEmpty(apiKey))
     {
         if (ctx.Request.Path.StartsWithSegments("/mcp"))
         {
-            var sent = Encoding.UTF8.GetBytes(ctx.Request.Headers["Ocp-Apim-Subscription-Key"].ToString());
+            var header = ctx.Request.Headers["x-mcp-key"].ToString();
+            if (header.Length == 0) header = ctx.Request.Headers["Ocp-Apim-Subscription-Key"].ToString();
+            var sent = Encoding.UTF8.GetBytes(header);
             if (!CryptographicOperations.FixedTimeEquals(sent, expected))
             {
                 ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
