@@ -51,7 +51,11 @@ echo "==> Comprobaciones (esperado: 200, 401, 401)"
 GW="https://$APIM.azure-api.net/$API"
 FQDN="$(az containerapp show -n "$APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)"
 req() { curl -s -m 30 -o /dev/null -w '%{http_code}' -X POST "$1" -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' "${@:2}" -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'; echo; }
-sleep 10
+# La nueva revisión de la Container App y la policy tardan en aplicarse: se espera hasta 2 minutos a que el gateway acepte la clave.
+for _ in $(seq 1 24); do
+  [ "$(req "$GW" -H "x-mcp-key: $GATEWAY_KEY")" = "200" ] && break
+  sleep 5
+done
 echo "gateway con la clave del cliente: $(req "$GW" -H "x-mcp-key: $GATEWAY_KEY")"
 echo "gateway sin clave:                $(req "$GW")"
 echo "backend directo con esa clave:    $(req "https://$FQDN/mcp" -H "x-mcp-key: $GATEWAY_KEY" -H "x-backend-key: $GATEWAY_KEY")"
