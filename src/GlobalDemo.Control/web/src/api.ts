@@ -1,4 +1,4 @@
-import type { GatewayState, LogEntry, Mode, Tool, ToolResult } from './types'
+import type { AuditResult, GatewayState, LogEntry, Mode, Tool, ToolResult } from './types'
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -20,6 +20,7 @@ const post = (url: string, body: unknown) =>
 export const getTools = () => fetch('/api/tools').then((r) => json<Tool[]>(r))
 export const getState = () => fetch('/api/state').then((r) => json<GatewayState>(r))
 export const getRequests = () => fetch('/api/requests').then((r) => json<LogEntry[]>(r))
+export const getAudit = (minutes = 60) => fetch(`/api/audit?minutes=${minutes}`).then((r) => json<AuditResult>(r))
 export const setBlockedAll = (blocked: boolean) => post('/api/blocks/all', { blocked }).then((r) => json<GatewayState>(r))
 export const setBlockedTools = (tools: string[]) => post('/api/blocks/tools', { tools }).then((r) => json<GatewayState>(r))
 export const setRateLimit = (callsPerMinute: number) => post('/api/limits', { callsPerMinute }).then((r) => json<GatewayState>(r))

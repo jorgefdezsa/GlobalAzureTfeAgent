@@ -17,6 +17,7 @@ builder.Services.AddSingleton(options);
 builder.Services.AddSingleton<TokenCredential>(new DefaultAzureCredential());
 builder.Services.AddSingleton<RequestLog>();
 builder.Services.AddSingleton<ArmClient>();
+builder.Services.AddSingleton<AuditClient>();
 builder.Services.AddHttpClient("agent", c => c.Timeout = Timeout.InfiniteTimeSpan);
 builder.Services.AddHttpClient("mcp", c => c.Timeout = TimeSpan.FromSeconds(90));
 builder.Services.AddHttpClient("arm", c => c.Timeout = TimeSpan.FromSeconds(30));
@@ -87,6 +88,19 @@ app.MapPost("/api/limits", async (RateLimitRequest req, ArmClient arm, RequestLo
     catch (Exception ex)
     {
         log.Add("gateway", "Cambio del límite de llamadas", null, sw.ElapsedMilliseconds, "error");
+        return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapGet("/api/audit", async (AuditClient audit, int? minutes, CancellationToken ct) =>
+{
+    if (!audit.Configured) return Results.Ok(new { Configured = false, Entries = Array.Empty<AuditEntry>() });
+    try
+    {
+        return Results.Ok(new { Configured = true, Entries = await audit.QueryAsync(minutes ?? 60, ct) });
+    }
+    catch (Exception ex)
+    {
         return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway);
     }
 });

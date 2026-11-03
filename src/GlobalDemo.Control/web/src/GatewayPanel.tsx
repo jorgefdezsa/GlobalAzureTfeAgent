@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AuditList from './AuditList'
 import type { GatewayState, LogEntry, Mode, Tool, ToolResult } from './types'
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export default function GatewayPanel(p: Props) {
+  const [tab, setTab] = useState<'requests' | 'audit'>('requests')
   const [tool, setTool] = useState('')
   const [args, setArgs] = useState('')
   const [argsError, setArgsError] = useState(false)
@@ -123,8 +125,14 @@ export default function GatewayPanel(p: Props) {
         </pre>
       )}
 
-      <h2 className="sub">Peticiones</h2>
-      <ul className="requests">
+      <div className="tabs">
+        <button className={tab === 'requests' ? 'on' : ''} onClick={() => setTab('requests')}>Peticiones</button>
+        <button className={tab === 'audit' ? 'on' : ''} onClick={() => setTab('audit')}>Auditoría</button>
+      </div>
+      {tab === 'audit' ? (
+        <AuditList />
+      ) : (
+        <ul className="requests">
         {p.requests.length === 0 && <li className="muted">Aún no hay peticiones.</li>}
         {p.requests.map((r, i) => (
           <li key={i} className={r.outcome}>
@@ -136,6 +144,7 @@ export default function GatewayPanel(p: Props) {
           </li>
         ))}
       </ul>
+      )}
     </section>
   )
 }

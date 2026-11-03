@@ -180,6 +180,22 @@ bash deploy/run-control.sh        # http://127.0.0.1:5200
 - Los interruptores escriben las named values `mcp-blocked` y `mcp-blocked-tools` de API Management, igual que `deploy/gateway-switch.sh`;
   el panel refresca el estado cada pocos segundos, así que también refleja cambios hechos desde el terminal.
 
+## Límite de llamadas y auditoría en el gateway
+
+Dos controles más en la policy del AI Gateway (`deploy/gateway-policy.xml`):
+
+- **Rate limit** (`mcp-rate-limit`): máximo de `tools/call` por minuto y clave de cliente; al pasarse el gateway responde 429 y el agente lo explica (`rate_limited`) sin reintentar. Se cambia desde el panel o con `bash deploy/gateway-switch.sh rate 5` / `rate off`. APIM puede dejar pasar una llamada más que el límite.
+- **Auditoría**: cada `tools/call` envía un evento `mcp-audit` a Application Insights con cliente, tool, argumentos, resultado (`allowed`, `blocked_tool`, `blocked_server`, `rate_limited`) y estado. El cliente sale de la clave `x-mcp-key`: `mcp-gateway-key` es el `agente` y `mcp-key-panel` el `panel`. Las peticiones con clave inválida dan 401 y no se auditan.
+
+Preparación, una vez (crea Application Insights sobre el Log Analytics del grupo, el logger, las named values de destino y la clave del panel, que guarda en `azd` como `MCP_PANEL_KEY`):
+
+```bash
+bash deploy/setup-audit.sh
+bash deploy/apply-gateway-policy.sh
+```
+
+El panel muestra los eventos en la pestaña **Auditoría** (consulta a Application Insights; los datos tardan varios minutos en aparecer). Los argumentos se guardan tal cual: si pudieran llevar datos personales, hay que enmascararlos en la policy.
+
 ## Seguridad
 
 - La clave de AviationStack nunca va en el repositorio: user-secrets en local, secreto de Container Apps en Azure.

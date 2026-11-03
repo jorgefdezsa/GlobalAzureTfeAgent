@@ -1,7 +1,9 @@
 <policies>
     <!--
       Policy del servidor MCP en API Management (AI Gateway). Requiere dos named values secretos:
-        mcp-gateway-key  clave que presentan los clientes en x-mcp-key (la de la conexión de la tool y la del agente)
+        mcp-gateway-key  clave del agente en x-mcp-key (la de la conexión de la tool y la del agente)
+        mcp-audit-endpoint / mcp-audit-ikey  endpoint de ingestión e instrumentation key de Application Insights
+        mcp-key-panel    clave del panel en x-mcp-key; cada clave identifica a un cliente en la auditoría
         mcp-backend-key  clave que solo conocen el gateway y el MCP de Container Apps (x-backend-key)
       y tres interruptores:
         mcp-blocked        true bloquea todo el servidor MCP con 403
@@ -9,15 +11,80 @@
                            tools/call de una tool bloqueada -> 403; tools/list -> la tool desaparece del catálogo.
         mcp-rate-limit     tools/call máximas por minuto y clave de cliente (429 al pasarse); 0 = sin límite
       Método y nombre de tool se comparan sin distinguir mayúsculas y se admiten lotes JSON-RPC (array).
+      Auditoría: cada tools/call envía un evento mcp-audit a Application Insights (send-request al endpoint de ingestión, sin esperar más de 3 s ni fallar si no responde) (cliente, tool, argumentos, resultado, estado).
       El cuerpo de la respuesta solo se lee en tools/list (JSON o SSE); en el resto no se toca para no romper el streaming.
     -->
     <inbound>
         <base />
-        <check-header name="x-mcp-key" failed-check-httpcode="401" failed-check-error-message="Unauthorized" ignore-case="true">
-            <value>{{mcp-gateway-key}}</value>
-        </check-header>
+        <set-variable name="client" value='@{
+            var key = context.Request.Headers.GetValueOrDefault("x-mcp-key", "");
+            if (key == "{{mcp-gateway-key}}") { return "agente"; }
+            if (key == "{{mcp-key-panel}}") { return "panel"; }
+            return "";
+        }' />
+        <choose>
+            <when condition='@((string)context.Variables["client"] == "")'>
+                <return-response>
+                    <set-status code="401" reason="Unauthorized" />
+                    <set-body>Unauthorized</set-body>
+                </return-response>
+            </when>
+        </choose>
+        <set-variable name="auditTool" value='@{
+            if (context.Request.Method != "POST") { return ""; }
+            JToken body;
+            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return ""; }
+            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
+            foreach (var item in items) {
+                var obj = item as JObject;
+                if (obj != null &amp;&amp; (((string)obj["method"]) ?? "").ToLowerInvariant() == "tools/call") { return (string)obj.SelectToken("params.name") ?? ""; }
+            }
+            return "";
+        }' />
+        <set-variable name="auditArgs" value='@{
+            if ((string)context.Variables["auditTool"] == "") { return ""; }
+            JToken body;
+            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return ""; }
+            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
+            foreach (var item in items) {
+                var obj = item as JObject;
+                if (obj != null &amp;&amp; (((string)obj["method"]) ?? "").ToLowerInvariant() == "tools/call") {
+                    var text = obj.SelectToken("params.arguments") == null ? "{}" : obj.SelectToken("params.arguments").ToString(Newtonsoft.Json.Formatting.None);
+                    return text.Length > 500 ? text.Substring(0, 500) : text;
+                }
+            }
+            return "";
+        }' />
+        <set-variable name="auditEvent" value='@{
+            if ((string)context.Variables["auditTool"] == "") { return ""; }
+            return new JArray(new JObject(
+                new JProperty("name", "Microsoft.ApplicationInsights.Event"),
+                new JProperty("time", DateTime.UtcNow.ToString("o")),
+                new JProperty("iKey", "{{mcp-audit-ikey}}"),
+                new JProperty("data", new JObject(
+                    new JProperty("baseType", "EventData"),
+                    new JProperty("baseData", new JObject(
+                        new JProperty("ver", 2),
+                        new JProperty("name", "mcp-audit"),
+                        new JProperty("properties", new JObject(
+                            new JProperty("client", (string)context.Variables["client"]),
+                            new JProperty("tool", (string)context.Variables["auditTool"]),
+                            new JProperty("args", (string)context.Variables["auditArgs"]),
+                            new JProperty("outcome", "§O"),
+                            new JProperty("status", "§S"))))))))).ToString(Newtonsoft.Json.Formatting.None);
+        }' />
         <choose>
             <when condition='@("{{mcp-blocked}}" == "true")'>
+                <choose>
+                    <when condition='@(context.Variables.GetValueOrDefault&lt;string&gt;("auditEvent", "") != "")'>
+                        <send-request mode="new" response-variable-name="auditResp" timeout="3" ignore-error="true">
+                            <set-url>{{mcp-audit-endpoint}}v2/track</set-url>
+                            <set-method>POST</set-method>
+                            <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+                            <set-body>@(((string)context.Variables["auditEvent"]).Replace("§O", "blocked_server").Replace("§S", "403"))</set-body>
+                        </send-request>
+                    </when>
+                </choose>
                 <return-response>
                     <set-status code="403" reason="Forbidden" />
                     <set-header name="Content-Type" exists-action="override">
@@ -46,6 +113,16 @@
         }' />
         <choose>
             <when condition='@((string)context.Variables["blockedTool"] != "")'>
+                <choose>
+                    <when condition='@(context.Variables.GetValueOrDefault&lt;string&gt;("auditEvent", "") != "")'>
+                        <send-request mode="new" response-variable-name="auditResp" timeout="3" ignore-error="true">
+                            <set-url>{{mcp-audit-endpoint}}v2/track</set-url>
+                            <set-method>POST</set-method>
+                            <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+                            <set-body>@(((string)context.Variables["auditEvent"]).Replace("§O", "blocked_tool").Replace("§S", "403"))</set-body>
+                        </send-request>
+                    </when>
+                </choose>
                 <return-response>
                     <set-status code="403" reason="Forbidden" />
                     <set-header name="Content-Type" exists-action="override">
@@ -59,19 +136,8 @@
                 </return-response>
             </when>
         </choose>
-        <set-variable name="isToolsCall" value='@{
-            if (context.Request.Method != "POST") { return "false"; }
-            JToken body;
-            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return "false"; }
-            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
-            foreach (var item in items) {
-                var obj = item as JObject;
-                if (obj != null &amp;&amp; (((string)obj["method"]) ?? "").ToLowerInvariant() == "tools/call") { return "true"; }
-            }
-            return "false";
-        }' />
         <choose>
-            <when condition='@("{{mcp-rate-limit}}" != "0" &amp;&amp; (string)context.Variables["isToolsCall"] == "true")'>
+            <when condition='@("{{mcp-rate-limit}}" != "0" &amp;&amp; (string)context.Variables["auditTool"] != "")'>
                 <rate-limit-by-key calls='@(Convert.ToInt32("{{mcp-rate-limit}}"))' renewal-period="60" counter-key='@(context.Request.Headers.GetValueOrDefault("x-mcp-key", ""))' />
             </when>
         </choose>
@@ -98,6 +164,16 @@
     </backend>
     <outbound>
         <base />
+        <choose>
+            <when condition='@(context.Variables.GetValueOrDefault&lt;string&gt;("auditEvent", "") != "")'>
+                <send-request mode="new" response-variable-name="auditResp" timeout="3" ignore-error="true">
+                    <set-url>{{mcp-audit-endpoint}}v2/track</set-url>
+                    <set-method>POST</set-method>
+                    <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+                    <set-body>@(((string)context.Variables["auditEvent"]).Replace("§O", "allowed").Replace("§S", context.Response.StatusCode.ToString()))</set-body>
+                </send-request>
+            </when>
+        </choose>
         <choose>
             <when condition='@((string)context.Variables["isToolsList"] == "true")'>
                 <set-body>@{
@@ -132,5 +208,15 @@
     </outbound>
     <on-error>
         <base />
+        <choose>
+            <when condition='@(context.Variables.GetValueOrDefault&lt;string&gt;("auditEvent", "") != "")'>
+                <send-request mode="new" response-variable-name="auditResp" timeout="3" ignore-error="true">
+                    <set-url>{{mcp-audit-endpoint}}v2/track</set-url>
+                    <set-method>POST</set-method>
+                    <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+                    <set-body>@(((string)context.Variables["auditEvent"]).Replace("§O", (context.Response.StatusCode == 429 ? "rate_limited" : "error")).Replace("§S", context.Response.StatusCode.ToString()))</set-body>
+                </send-request>
+            </when>
+        </choose>
     </on-error>
 </policies>
