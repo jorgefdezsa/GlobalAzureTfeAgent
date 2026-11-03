@@ -10,6 +10,9 @@ public sealed class ControlOptions
     public string ResourceGroup { get; set; } = "GlobalAzureTenerife";
     public string Apim { get; set; } = "apim-globaltfe";
 
+    /// <summary>Application Insights donde el gateway envía la auditoría (vacío = pestaña desactivada).</summary>
+    public string AppInsights { get; set; } = "";
+
     /// <summary>Endpoint Responses del hosted agent (AGENT_ASISTENTE_VUELOS_RESPONSES_ENDPOINT de azd).</summary>
     public string AgentEndpoint { get; set; } = "";
 
@@ -29,9 +32,14 @@ public sealed record BlockAllRequest(bool Blocked);
 
 public sealed record BlockToolsRequest(string[] Tools);
 
+public sealed record RateLimitRequest(int CallsPerMinute);
+
 public sealed record ToolInfo(string Name, string Description, JsonNode SampleArgs);
 
-public sealed record BlockState(bool BlockedAll, string[] BlockedTools);
+/// <summary>Estado de los interruptores del gateway. RateLimit: tools/call por minuto y clave; 0 = sin límite.</summary>
+public sealed record BlockState(bool BlockedAll, string[] BlockedTools, int RateLimit);
+
+public sealed record AuditEntry(DateTimeOffset At, string Client, string Tool, string Args, string Outcome, int? Status);
 
 public sealed record LogEntry(DateTimeOffset At, string Kind, string Detail, int? Status, long Ms, string Outcome);
 

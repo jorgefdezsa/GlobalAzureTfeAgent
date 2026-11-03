@@ -119,3 +119,25 @@ h2.sub { margin-top: 16px; }
   .grid { grid-template-columns: 1fr; }
   .chat { height: 70vh; }
 }
+
+/* Rate limit */
+.ratebox { margin-top: 10px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: #0a1740; }
+.ratebox.limited { border-color: rgba(255, 200, 97, 0.55); background: rgba(255, 200, 97, 0.08); }
+.toggle.bare { padding: 0; border: 0; background: transparent; }
+.toggle input:checked + .switch.amber { background: var(--amber); }
+.stepper { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: 13px; }
+.stepper b { color: var(--amber); font-size: 15px; }
+.stepper .pill { padding: 2px 12px; }
+.tool-chip.limited { color: var(--amber); border-color: rgba(255, 200, 97, 0.5); background: rgba(255, 200, 97, 0.1); }
+.step.limited .step-dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.step.limited .step-label { color: var(--amber); }
+.result.limitado { border-color: rgba(255, 200, 97, 0.55); }
+.requests li.limitado { background: rgba(255, 200, 97, 0.1); color: var(--amber); }
+
+/* Pestañas y auditoría */
+.tabs { display: flex; gap: 6px; margin: 14px 0 8px; }
+.tabs button { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 3px 14px; cursor: pointer; font-size: 12.5px; }
+.tabs button.on { color: var(--text); border-color: var(--cyan); background: rgba(47, 224, 255, 0.08); }
+.requests.audit li { grid-template-columns: 64px 62px 1fr 36px 110px; }
+.requests.audit small { color: var(--muted); margin-left: 6px; }
+.requests.audit .detail { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

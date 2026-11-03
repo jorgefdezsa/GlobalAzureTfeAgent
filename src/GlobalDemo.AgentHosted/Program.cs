@@ -30,6 +30,8 @@ const string instructions = """
     Si un vuelo no aparece o una herramienta falla o no está disponible, dilo con claridad y sugiere una alternativa.
     Si el resultado de una herramienta tiene status "blocked", di que la herramienta está bloqueada por el administrador,
     cita el mensaje y no reintentes.
+    Si el resultado tiene status "rate_limited", di que el AI Gateway ha alcanzado el límite de llamadas por minuto,
+    que hay que esperar un poco, y no reintentes en bucle ni llames a otras herramientas para esquivarlo.
     Responde en español, breve y con las horas en formato local.
     """;
 

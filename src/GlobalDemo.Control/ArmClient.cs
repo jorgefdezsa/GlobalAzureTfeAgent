@@ -11,17 +11,22 @@ public sealed class ArmClient(IHttpClientFactory http, TokenCredential credentia
     private const string Api = "api-version=2024-06-01-preview";
     private const string AllId = "mcp-blocked";
     private const string ToolsId = "mcp-blocked-tools";
+    private const string RateId = "mcp-rate-limit";
 
     public async Task<BlockState> ReadAsync(CancellationToken ct)
     {
         var all = ReadValueAsync(AllId, ct);
         var tools = ReadValueAsync(ToolsId, ct);
+        var rate = ReadValueAsync(RateId, ct);
         var toolList = (await tools).Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Where(t => !t.Equals("none", StringComparison.OrdinalIgnoreCase)).ToArray();
-        return new BlockState((await all).Equals("true", StringComparison.OrdinalIgnoreCase), toolList);
+        var calls = int.TryParse(await rate, out var n) && n > 0 ? n : 0;
+        return new BlockState((await all).Equals("true", StringComparison.OrdinalIgnoreCase), toolList, calls);
     }
 
     public Task SetAllAsync(bool blocked, CancellationToken ct) => WriteValueAsync(AllId, blocked ? "true" : "false", ct);
+
+    public Task SetRateLimitAsync(int callsPerMinute, CancellationToken ct) => WriteValueAsync(RateId, Math.Max(0, callsPerMinute).ToString(), ct);
 
     public Task SetToolsAsync(IEnumerable<string> tools, CancellationToken ct)
     {

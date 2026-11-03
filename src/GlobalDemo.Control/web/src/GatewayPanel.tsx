@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AuditList from './AuditList'
 import type { GatewayState, LogEntry, Mode, Tool, ToolResult } from './types'
 
 type Props = {
@@ -11,10 +12,12 @@ type Props = {
   lastResult: ToolResult | null
   onToggleTool: (name: string) => void
   onToggleAll: () => void
+  onRateLimit: (callsPerMinute: number) => void
   onTest: (tool: string, args: unknown) => void
 }
 
 export default function GatewayPanel(p: Props) {
+  const [tab, setTab] = useState<'requests' | 'audit'>('requests')
   const [tool, setTool] = useState('')
   const [args, setArgs] = useState('')
   const [argsError, setArgsError] = useState(false)
@@ -39,6 +42,17 @@ export default function GatewayPanel(p: Props) {
     } catch {
       setArgsError(true)
     }
+  }
+
+  const [draft, setDraft] = useState(5)
+  useEffect(() => {
+    if (p.gw && p.gw.rateLimit > 0) setDraft(p.gw.rateLimit)
+  }, [p.gw?.rateLimit])
+  const limitOn = !!p.gw && p.gw.rateLimit > 0
+  const step = (delta: number) => {
+    const next = Math.min(600, Math.max(1, draft + delta))
+    setDraft(next)
+    if (limitOn) p.onRateLimit(next)
   }
 
   const blocked = (name: string) => !!p.gw && (p.gw.blockedAll || p.gw.blockedTools.includes(name))
@@ -70,8 +84,24 @@ export default function GatewayPanel(p: Props) {
           </label>
         ))}
       </div>
+      <div className={`ratebox ${limitOn ? 'limited' : ''}`}>
+        <label className="toggle bare">
+          <span>
+            <code>mcp-rate-limit</code> · límite de llamadas
+          </span>
+          <input type="checkbox" checked={limitOn} disabled={!p.gw} onChange={() => p.onRateLimit(limitOn ? 0 : draft)} />
+          <i className="switch amber" />
+        </label>
+        <div className="stepper">
+          <button className="pill ghost" disabled={!p.gw || draft <= 1} onClick={() => step(-1)}>−</button>
+          <span>
+            <b>{draft}</b> llamadas / minuto
+          </span>
+          <button className="pill ghost" disabled={!p.gw || draft >= 600} onClick={() => step(1)}>+</button>
+        </div>
+      </div>
       <p className="hint">
-        Bloquear una tool cambia una named value en API Management{p.gw ? ` (${p.gw.apim})` : ''}: ni el agente ni el MCP se tocan.
+        Bloquear una tool cambia una named value en API Management (igual que el límite de llamadas){p.gw ? ` (${p.gw.apim})` : ''}: ni el agente ni el MCP se tocan.
       </p>
 
       <div className="tester">
@@ -95,8 +125,14 @@ export default function GatewayPanel(p: Props) {
         </pre>
       )}
 
-      <h2 className="sub">Peticiones</h2>
-      <ul className="requests">
+      <div className="tabs">
+        <button className={tab === 'requests' ? 'on' : ''} onClick={() => setTab('requests')}>Peticiones</button>
+        <button className={tab === 'audit' ? 'on' : ''} onClick={() => setTab('audit')}>Auditoría</button>
+      </div>
+      {tab === 'audit' ? (
+        <AuditList />
+      ) : (
+        <ul className="requests">
         {p.requests.length === 0 && <li className="muted">Aún no hay peticiones.</li>}
         {p.requests.map((r, i) => (
           <li key={i} className={r.outcome}>
@@ -108,6 +144,7 @@ export default function GatewayPanel(p: Props) {
           </li>
         ))}
       </ul>
+      )}
     </section>
   )
 }

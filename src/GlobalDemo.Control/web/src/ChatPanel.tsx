@@ -41,8 +41,8 @@ export default function ChatPanel({ messages, busy, onSend }: Props) {
               <div className="tool-chips">
                 {m.tools.map((t, j) => (
                   <span key={j} className={`tool-chip ${t.state}`}>
-                    {t.state === 'blocked' ? '⛔' : t.state === 'error' ? '⚠' : t.state === 'pending' ? '…' : '✓'} {t.name}
-                    {t.state === 'blocked' ? ' · bloqueada' : ''}
+                    {t.state === 'blocked' ? '⛔' : t.state === 'limited' ? '⏱' : t.state === 'error' ? '⚠' : t.state === 'pending' ? '…' : '✓'} {t.name}
+                    {t.state === 'blocked' ? ' · bloqueada' : t.state === 'limited' ? ' · límite' : ''}
                   </span>
                 ))}
               </div>

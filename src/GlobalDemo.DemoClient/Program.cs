@@ -87,7 +87,9 @@ static void ShowItem(JsonElement item)
                 : item.GetProperty("output").GetRawText();
             bool blocked = output.Contains("\"status\":\"blocked\"", StringComparison.Ordinal);
             string shown = output.Length > 240 ? output[..240] + "…" : output;
-            Paint(blocked ? ConsoleColor.Red : ConsoleColor.Green, $"{(blocked ? "[BLOCKED]" : "[RESULT]")} {shown}");
+            bool limited = output.Contains("\"status\":\"rate_limited\"", StringComparison.Ordinal);
+            Paint(blocked ? ConsoleColor.Red : limited ? ConsoleColor.Yellow : ConsoleColor.Green,
+                $"{(blocked ? "[BLOCKED]" : limited ? "[LIMITED]" : "[RESULT]")} {shown}");
             break;
     }
 }

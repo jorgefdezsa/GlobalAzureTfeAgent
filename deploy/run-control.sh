@@ -19,7 +19,9 @@ export Control__ResourceGroup="$RG"
 export Control__Apim="${APIM:-apim-globaltfe}"
 export Control__AgentEndpoint="$(azd env get-value AGENT_ASISTENTE_VUELOS_RESPONSES_ENDPOINT)"
 export Control__McpGatewayUrl="$(azd env get-value MCP_URL)"
-export Control__McpKey="$(azd env get-value MCP_SUBSCRIPTION_KEY)"
+# El panel se identifica con su propia clave (mcp-key-panel, creada por setup-audit.sh); si no existe, usa la del agente.
+export Control__McpKey="$(azd env get-value MCP_PANEL_KEY 2>/dev/null || azd env get-value MCP_SUBSCRIPTION_KEY)"
+export Control__AppInsights="$(azd env get-value AUDIT_APPINSIGHTS_NAME 2>/dev/null || true)"
 export Control__McpDirectUrl="https://$(az containerapp show -n "$APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)/mcp"
 
 if [ ! -f "$WEB/wwwroot/index.html" ]; then

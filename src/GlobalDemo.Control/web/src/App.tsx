@@ -86,8 +86,9 @@ export default function App() {
         } else if (ev.type === 'response.output_item.done' && ev.item?.type === 'function_call_output') {
           const out = typeof ev.item.output === 'string' ? ev.item.output : JSON.stringify(ev.item.output)
           const blocked = out.includes('"status":"blocked"')
-          const failed = !blocked && /"status":"(gateway_error|tool_error)"/.test(out)
-          const state: StepState = blocked ? 'blocked' : failed ? 'error' : 'ok'
+          const limited = out.includes('"status":"rate_limited"')
+          const failed = !blocked && !limited && /"status":"(gateway_error|tool_error)"/.test(out)
+          const state: StepState = blocked ? 'blocked' : limited ? 'limited' : failed ? 'error' : 'ok'
           patchLastAssistant((m) => {
             const at = m.tools.map((t) => t.state).lastIndexOf('pending')
             return { ...m, tools: m.tools.map((t, i) => (i === at ? { ...t, state } : t)) }
@@ -97,7 +98,9 @@ export default function App() {
             if (at < 0) return t
             const detail = blocked
               ? '403 AccessBlockedByGateway · la policy corta la llamada y no llega al MCP'
-              : failed
+              : limited
+                ? '429 · el rate limit del gateway corta la llamada y no llega al MCP'
+                : failed
                 ? out.slice(0, 160)
                 : `200 · el MCP responde (${out.length} caracteres)`
             return { ...t, steps: t.steps.map((s, i) => (i === at ? { ...s, state, detail: `${s.detail}\n${detail}` } : s)) }
@@ -157,6 +160,20 @@ export default function App() {
     refreshRequests()
   }
 
+  const changeRateLimit = async (calls: number) => {
+    if (!gw) return
+    setGw({ ...gw, rateLimit: calls })
+    try {
+      const state = await api.setRateLimit(calls)
+      setGw((g) => (g ? { ...g, ...state } : g))
+      setGwError(null)
+    } catch (e) {
+      setGwError(errorText(e))
+      refreshState()
+    }
+    refreshRequests()
+  }
+
   const runTest = async (tool: string, args: unknown) => {
     setTesting(true)
     const id = Date.now()
@@ -174,6 +191,8 @@ export default function App() {
       const steps: TraceStep[] = []
       if (result.status === 403) {
         steps.push({ label: 'AI Gateway · policy de bloqueo', detail: `403 · ${tool} bloqueada, no llega al MCP`, state: 'blocked' })
+      } else if (result.status === 429) {
+        steps.push({ label: 'AI Gateway · rate limit', detail: `429 · límite de ${gw?.rateLimit ?? '?'} llamadas/min superado, no llega al MCP`, state: 'limited' })
       } else if (result.status === 401) {
         steps.push({
           label: mode === 'direct' ? 'Backend cerrado' : 'AI Gateway rechaza la clave',
@@ -222,6 +241,7 @@ export default function App() {
             lastResult={lastResult}
             onToggleTool={toggleTool}
             onToggleAll={toggleAll}
+            onRateLimit={changeRateLimit}
             onTest={runTest}
           />
         </div>
