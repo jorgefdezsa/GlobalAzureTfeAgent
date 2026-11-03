@@ -85,9 +85,14 @@ internal sealed class AviationMcpTools(Uri endpoint, HttpClient http)
             // El gateway bloqueó la tool: el mensaje incluye el cuerpo de la respuesta con el motivo.
             return Failure(tool, "blocked", ex.Message);
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
+        {
+            // El gateway frena las llamadas (rate limit por minuto).
+            return Failure(tool, "rate_limited", "El AI Gateway ha alcanzado el límite de llamadas por minuto. " + ex.Message);
+        }
         catch (HttpRequestException ex)
         {
-            // Otro corte del gateway (429, 5xx…) o el MCP no es alcanzable.
+            // Otro corte del gateway (5xx…) o el MCP no es alcanzable.
             return Failure(tool, "gateway_error", ex.Message);
         }
         catch (McpException ex)
@@ -96,7 +101,7 @@ internal sealed class AviationMcpTools(Uri endpoint, HttpClient http)
         }
     }
 
-    // status: "blocked" | "gateway_error" | "tool_error". El cliente de la demo y las instrucciones del agente dependen de estos valores.
+    // status: "blocked" | "rate_limited" | "gateway_error" | "tool_error". El cliente de la demo y las instrucciones del agente dependen de estos valores.
     private static string Failure(string tool, string status, string message) =>
         JsonSerializer.Serialize(new { status, tool, message });
 }

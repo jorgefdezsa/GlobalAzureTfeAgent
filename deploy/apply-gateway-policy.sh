@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Aplica deploy/gateway-policy.xml al servidor MCP del AI Gateway y crea el named value mcp-blocked-tools si falta.
+# Aplica deploy/gateway-policy.xml al servidor MCP del AI Gateway y crea los named values mcp-blocked-tools y mcp-rate-limit si faltan.
 # No toca las claves ni la Container App (para eso, deploy/lock-backend.sh).
 #
 # Uso (desde la raíz del repositorio, con `az login` hecho):
@@ -15,7 +15,7 @@ BASE="https://management.azure.com/subscriptions/$SUB/resourceGroups/$RG/provide
 API="$(az rest --method get --url "$BASE/apis?api-version=2024-06-01-preview" --query "value[?properties.type=='mcp'].name | [0]" -o tsv 2>/dev/null)"
 [ -n "$API" ] || { echo "No encuentro un servidor MCP en $APIM"; exit 1; }
 
-for nv in mcp-blocked:false mcp-blocked-tools:none; do
+for nv in mcp-blocked:false mcp-blocked-tools:none mcp-rate-limit:0; do
   id="${nv%%:*}"; default="${nv#*:}"
   az apim nv show -g "$RG" -n "$APIM" --named-value-id "$id" >/dev/null 2>&1 \
     || az apim nv create -g "$RG" -n "$APIM" --named-value-id "$id" --display-name "$id" --value "$default" >/dev/null 2>&1

@@ -3,10 +3,11 @@
       Policy del servidor MCP en API Management (AI Gateway). Requiere dos named values secretos:
         mcp-gateway-key  clave que presentan los clientes en x-mcp-key (la de la conexión de la tool y la del agente)
         mcp-backend-key  clave que solo conocen el gateway y el MCP de Container Apps (x-backend-key)
-      y dos interruptores:
+      y tres interruptores:
         mcp-blocked        true bloquea todo el servidor MCP con 403
         mcp-blocked-tools  lista separada por comas de tools bloqueadas (p. ej. buscar_vuelo,estado_llegada); none = ninguna.
                            tools/call de una tool bloqueada -> 403; tools/list -> la tool desaparece del catálogo.
+        mcp-rate-limit     tools/call máximas por minuto y clave de cliente (429 al pasarse); 0 = sin límite
       Método y nombre de tool se comparan sin distinguir mayúsculas y se admiten lotes JSON-RPC (array).
       El cuerpo de la respuesta solo se lee en tools/list (JSON o SSE); en el resto no se toca para no romper el streaming.
     -->
@@ -56,6 +57,22 @@
                             new JProperty("message", "Tool " + (string)context.Variables["blockedTool"] + " of server aviation-mcp is blocked.")))).ToString();
                     }</set-body>
                 </return-response>
+            </when>
+        </choose>
+        <set-variable name="isToolsCall" value='@{
+            if (context.Request.Method != "POST") { return "false"; }
+            JToken body;
+            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return "false"; }
+            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
+            foreach (var item in items) {
+                var obj = item as JObject;
+                if (obj != null &amp;&amp; (((string)obj["method"]) ?? "").ToLowerInvariant() == "tools/call") { return "true"; }
+            }
+            return "false";
+        }' />
+        <choose>
+            <when condition='@("{{mcp-rate-limit}}" != "0" &amp;&amp; (string)context.Variables["isToolsCall"] == "true")'>
+                <rate-limit-by-key calls='@(Convert.ToInt32("{{mcp-rate-limit}}"))' renewal-period="60" counter-key='@(context.Request.Headers.GetValueOrDefault("x-mcp-key", ""))' />
             </when>
         </choose>
         <set-variable name="isToolsList" value='@{

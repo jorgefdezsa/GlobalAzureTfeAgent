@@ -32,7 +32,7 @@ app.MapGet("/api/state", async (ArmClient arm, ControlOptions o, CancellationTok
     try
     {
         var state = await arm.ReadAsync(ct);
-        return Results.Ok(new { state.BlockedAll, state.BlockedTools, AgentConfigured = o.AgentEndpoint.Length > 0, Apim = o.Apim });
+        return Results.Ok(new { state.BlockedAll, state.BlockedTools, state.RateLimit, AgentConfigured = o.AgentEndpoint.Length > 0, Apim = o.Apim });
     }
     catch (Exception ex)
     {
@@ -70,6 +70,23 @@ app.MapPost("/api/blocks/tools", async (BlockToolsRequest req, ArmClient arm, Re
     catch (Exception ex)
     {
         log.Add("gateway", "Cambio de tools bloqueadas", null, sw.ElapsedMilliseconds, "error");
+        return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapPost("/api/limits", async (RateLimitRequest req, ArmClient arm, RequestLog log, CancellationToken ct) =>
+{
+    var sw = Stopwatch.StartNew();
+    var calls = Math.Clamp(req.CallsPerMinute, 0, 600);
+    try
+    {
+        await arm.SetRateLimitAsync(calls, ct);
+        log.Add("gateway", calls == 0 ? "Sin límite de llamadas" : $"Límite: {calls} llamadas/min", 200, sw.ElapsedMilliseconds, calls == 0 ? "ok" : "limitado");
+        return Results.Ok(await arm.ReadAsync(ct));
+    }
+    catch (Exception ex)
+    {
+        log.Add("gateway", "Cambio del límite de llamadas", null, sw.ElapsedMilliseconds, "error");
         return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway);
     }
 });
@@ -114,7 +131,7 @@ app.MapPost("/api/chat", async (ChatRequest req, HttpContext ctx, IHttpClientFac
         if (seen.Length < 400_000) seen.Append(Encoding.UTF8.GetString(buffer, 0, read));
     }
 
-    var outcome = !response.IsSuccessStatusCode ? "error" : seen.ToString().Contains("AccessBlockedByGateway") ? "bloqueado" : "ok";
+    var outcome = !response.IsSuccessStatusCode ? "error" : seen.ToString().Contains("AccessBlockedByGateway") ? "bloqueado" : seen.ToString().Contains("rate_limited") ? "limitado" : "ok";
     log.Add("chat", req.Message, (int)response.StatusCode, sw.ElapsedMilliseconds, outcome);
 });
 
@@ -150,7 +167,7 @@ app.MapPost("/api/tool-test", async (ToolTestRequest req, IHttpClientFactory htt
         var status = (int)response.StatusCode;
         var toolError = false;
         try { toolError = JsonNode.Parse(data)?["result"]?["isError"]?.GetValue<bool>() == true; } catch { /* cuerpo no JSON */ }
-        var outcome = status is 403 or 401 ? "bloqueado" : response.IsSuccessStatusCode && !toolError ? "ok" : "error";
+        var outcome = status is 403 or 401 ? "bloqueado" : status == 429 ? "limitado" : response.IsSuccessStatusCode && !toolError ? "ok" : "error";
         log.Add(direct ? "tool (directo)" : "tool", req.Tool, status, sw.ElapsedMilliseconds, outcome);
         return Results.Ok(new { req.Mode, Status = status, Ms = sw.ElapsedMilliseconds, Outcome = outcome, Body = data.Length > 4000 ? data[..4000] + "…" : data });
     }

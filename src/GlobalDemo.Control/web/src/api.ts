@@ -22,6 +22,7 @@ export const getState = () => fetch('/api/state').then((r) => json<GatewayState>
 export const getRequests = () => fetch('/api/requests').then((r) => json<LogEntry[]>(r))
 export const setBlockedAll = (blocked: boolean) => post('/api/blocks/all', { blocked }).then((r) => json<GatewayState>(r))
 export const setBlockedTools = (tools: string[]) => post('/api/blocks/tools', { tools }).then((r) => json<GatewayState>(r))
+export const setRateLimit = (callsPerMinute: number) => post('/api/limits', { callsPerMinute }).then((r) => json<GatewayState>(r))
 export const testTool = (tool: string, args: unknown, mode: Mode) =>
   post('/api/tool-test', { tool, arguments: args, mode }).then((r) => json<ToolResult>(r))
 export const chat = (message: string, previousResponseId: string | null, signal?: AbortSignal) =>
