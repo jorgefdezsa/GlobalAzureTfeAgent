@@ -19,6 +19,7 @@ Usuario ──► Agente (Agent Framework) ──► MCP (6 tools) ──► Glo
 | `src/GlobalDemo.Mcp` | Servidor MCP (Streamable HTTP en `/mcp`) con las 6 tools de vuelos. |
 | `src/GlobalDemo.Agent` | Agente local con endpoint `/chat`; consume el MCP. Es el que corre con Aspire. |
 | `src/GlobalDemo.AgentHosted` | El mismo agente empaquetado como Foundry Hosted Agent (protocolo Responses, puerto 8088). |
+| `src/GlobalDemo.DemoClient` | Consola de la demo: llama al agente hospedado con streaming y pinta tool calls, resultados y bloqueos en vivo. |
 | `src/GlobalDemo.AppHost` | Orquestación Aspire (api, mcp, agent). |
 | `src/GlobalDemo.ServiceDefaults` | Telemetría, health checks y service discovery comunes. |
 | `deploy/deploy-mcp.sh` | Publica el MCP en Azure Container Apps. |
@@ -132,6 +133,28 @@ Detalles a tener en cuenta:
 - Las tools se cargan dentro del contenedor con `McpClient`, así que Foundry **no las lista** en la configuración del agente
   (sí aparecen como `function_call` en las respuestas y en las trazas). Para verlas como recurso del proyecto habría que registrarlas
   en un **Toolbox** de Foundry (pendiente).
+
+## Demo: bloquear una tool desde el AI Gateway
+
+El agente hospedado llama al MCP a través de API Management (AI Gateway de Foundry):
+
+```
+Consola ──► Hosted agent ──► API Management (AI Gateway) ──► MCP en Container Apps
+```
+
+- La tool `aviation-mcp` se registró en Foundry (Compilación > Herramientas > Personalizadas > Model Context Protocol, clave en la cabecera `x-mcp-key`). Con el gateway habilitado, su endpoint es el de API Management.
+- El agente define las tools con esquema fijo y abre una sesión MCP por llamada, así que si el gateway bloquea, el agente sigue arrancando y el 403 llega al modelo como resultado de la tool (`status: "blocked"`).
+- `MCP_URL` es la URL del gateway y `MCP_KEY_HEADER` es `x-mcp-key` (`azd env set`, y `azd deploy`).
+- El bloqueo es una policy en el servidor MCP de API Management que devuelve 403 si el named value `mcp-blocked` vale `true`.
+
+```bash
+dotnet run --project src/GlobalDemo.DemoClient                    # conversación; verás [TOOL] y [RESULT]
+az apim nv update -g GlobalAzureTenerife -n apim-globaltfe --named-value-id mcp-blocked --value true    # bloquear
+az apim nv update -g GlobalAzureTenerife -n apim-globaltfe --named-value-id mcp-blocked --value false   # desbloquear
+```
+
+Con el bloqueo activo, la siguiente pregunta muestra `[TOOL]` y `[BLOCKED]` en rojo sin redesplegar, y el modelo explica el bloqueo.
+Ensáyalo antes de la demo: el tiempo de propagación del bloqueo no está documentado. API Management Basic v2 se factura por horas: bórralo al terminar.
 
 ## Seguridad
 

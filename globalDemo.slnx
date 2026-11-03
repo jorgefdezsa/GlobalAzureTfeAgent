@@ -4,6 +4,7 @@
     <Project Path="src/GlobalDemo.AgentHosted/GlobalDemo.AgentHosted.csproj" />
     <Project Path="src/GlobalDemo.Api/GlobalDemo.Api.csproj" />
     <Project Path="src/GlobalDemo.AppHost/GlobalDemo.AppHost.csproj" />
+    <Project Path="src/GlobalDemo.DemoClient/GlobalDemo.DemoClient.csproj" />
     <Project Path="src/GlobalDemo.Aviation/GlobalDemo.Aviation.csproj" />
     <Project Path="src/GlobalDemo.Mcp/GlobalDemo.Mcp.csproj" />
     <Project Path="src/GlobalDemo.ServiceDefaults/GlobalDemo.ServiceDefaults.csproj" />
