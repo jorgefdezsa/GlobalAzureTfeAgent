@@ -180,6 +180,8 @@ bash deploy/run-control.sh        # http://127.0.0.1:5200
 - Los interruptores escriben las named values `mcp-blocked` y `mcp-blocked-tools` de API Management, igual que `deploy/gateway-switch.sh`;
   el panel refresca el estado cada pocos segundos, así que también refleja cambios hechos desde el terminal.
 
+También se puede lanzar desde Aspire (`dotnet run --project src/GlobalDemo.AppHost`): el panel aparece como recurso `control` en el dashboard y sirve en `http://127.0.0.1:5200`. El AppHost toma la configuración del entorno de azd (`.azure/<entorno>/.env`) y compila el frontend si falta; el panel sigue hablando con el agente de Foundry y el AI Gateway, no con el MCP local. `MCP_DIRECT_URL` (para "Probar directo") lo guarda `deploy/run-control.sh`.
+
 ## Límite de llamadas y auditoría en el gateway
 
 Dos controles más en la policy del AI Gateway (`deploy/gateway-policy.xml`):

@@ -23,6 +23,8 @@ export Control__McpGatewayUrl="$(azd env get-value MCP_URL)"
 export Control__McpKey="$(azd env get-value MCP_PANEL_KEY 2>/dev/null || azd env get-value MCP_SUBSCRIPTION_KEY)"
 export Control__AppInsights="$(azd env get-value AUDIT_APPINSIGHTS_NAME 2>/dev/null || true)"
 export Control__McpDirectUrl="https://$(az containerapp show -n "$APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)/mcp"
+# El AppHost de Aspire lo lee de azd (no ejecuta az): se guarda aquí.
+azd env set MCP_DIRECT_URL "$Control__McpDirectUrl" >/dev/null 2>&1 || true
 
 if [ ! -f "$WEB/wwwroot/index.html" ]; then
   echo "==> Compilando el frontend"
