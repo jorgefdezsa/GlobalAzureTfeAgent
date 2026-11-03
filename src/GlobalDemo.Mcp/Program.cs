@@ -17,8 +17,9 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-// Si hay Mcp:ApiKey (p. ej. publicado en Container Apps), /mcp exige la clave en x-mcp-key (la que usa la conexión de la
-// tool en Foundry) o en Ocp-Apim-Subscription-Key. Sin clave configurada (local) no se pide nada.
+// Si hay Mcp:ApiKey (p. ej. publicado en Container Apps), /mcp exige la clave de backend en x-backend-key. Solo la conoce
+// el AI Gateway, que la inyecta; la clave que usan los clientes (x-mcp-key) la valida el gateway y no sirve aquí, así que
+// llamar a este servidor directamente no se salta el bloqueo. Sin clave configurada (local) no se pide nada.
 var apiKey = app.Configuration["Mcp:ApiKey"];
 if (!string.IsNullOrEmpty(apiKey))
 {
@@ -27,9 +28,7 @@ if (!string.IsNullOrEmpty(apiKey))
     {
         if (ctx.Request.Path.StartsWithSegments("/mcp"))
         {
-            var header = ctx.Request.Headers["x-mcp-key"].ToString();
-            if (header.Length == 0) header = ctx.Request.Headers["Ocp-Apim-Subscription-Key"].ToString();
-            var sent = Encoding.UTF8.GetBytes(header);
+            var sent = Encoding.UTF8.GetBytes(ctx.Request.Headers["x-backend-key"].ToString());
             if (!CryptographicOperations.FixedTimeEquals(sent, expected))
             {
                 ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
