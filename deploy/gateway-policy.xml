@@ -5,8 +5,10 @@
         mcp-backend-key  clave que solo conocen el gateway y el MCP de Container Apps (x-backend-key)
       y dos interruptores:
         mcp-blocked        true bloquea todo el servidor MCP con 403
-        mcp-blocked-tools  lista separada por comas de tools bloqueadas con 403 (p. ej. buscar_vuelo,estado_llegada); none = ninguna
-      No leer context.Response.Body: rompe el streaming de MCP. El cuerpo de la petición se lee con preserveContent.
+        mcp-blocked-tools  lista separada por comas de tools bloqueadas (p. ej. buscar_vuelo,estado_llegada); none = ninguna.
+                           tools/call de una tool bloqueada -> 403; tools/list -> la tool desaparece del catálogo.
+      Método y nombre de tool se comparan sin distinguir mayúsculas y se admiten lotes JSON-RPC (array).
+      El cuerpo de la respuesta solo se lee en tools/list (JSON o SSE); en el resto no se toca para no romper el streaming.
     -->
     <inbound>
         <base />
@@ -28,12 +30,18 @@
             if (context.Request.Method != "POST") { return ""; }
             var list = "{{mcp-blocked-tools}}".Replace(" ", "").ToLowerInvariant();
             if (list == "" || list == "none") { return ""; }
-            JObject body = context.Request.Body.As&lt;JObject&gt;(preserveContent: true);
-            if (body == null) { return ""; }
-            if ((string)body["method"] != "tools/call") { return ""; }
-            var name = (string)body.SelectToken("params.name");
-            if (name == null) { return ""; }
-            return ("," + list + ",").Contains("," + name.ToLowerInvariant() + ",") ? name : "";
+            JToken body;
+            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return ""; }
+            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
+            foreach (var item in items) {
+                var obj = item as JObject;
+                if (obj == null) { continue; }
+                if ((((string)obj["method"]) ?? "").ToLowerInvariant() != "tools/call") { continue; }
+                var name = (string)obj.SelectToken("params.name");
+                if (name == null) { continue; }
+                if (("," + list + ",").Contains("," + name.ToLowerInvariant() + ",")) { return name; }
+            }
+            return "";
         }' />
         <choose>
             <when condition='@((string)context.Variables["blockedTool"] != "")'>
@@ -50,6 +58,19 @@
                 </return-response>
             </when>
         </choose>
+        <set-variable name="isToolsList" value='@{
+            if (context.Request.Method != "POST") { return "false"; }
+            var list = "{{mcp-blocked-tools}}".Replace(" ", "").ToLowerInvariant();
+            if (list == "" || list == "none") { return "false"; }
+            JToken body;
+            try { body = JToken.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true)); } catch { return "false"; }
+            var items = body is JArray ? (IEnumerable&lt;JToken&gt;)body : new JToken[] { body };
+            foreach (var item in items) {
+                var obj = item as JObject;
+                if (obj != null &amp;&amp; (((string)obj["method"]) ?? "").ToLowerInvariant() == "tools/list") { return "true"; }
+            }
+            return "false";
+        }' />
         <set-header name="x-mcp-key" exists-action="delete" />
         <set-header name="x-backend-key" exists-action="override">
             <value>{{mcp-backend-key}}</value>
@@ -60,6 +81,37 @@
     </backend>
     <outbound>
         <base />
+        <choose>
+            <when condition='@((string)context.Variables["isToolsList"] == "true")'>
+                <set-body>@{
+                    var hidden = "{{mcp-blocked-tools}}".Replace(" ", "").ToLowerInvariant().Split(',');
+                    var raw = context.Response.Body.As&lt;string&gt;(preserveContent: true);
+                    var sse = context.Response.Headers.GetValueOrDefault("Content-Type", "").Contains("text/event-stream");
+                    var lines = sse ? raw.Split('\n') : new string[] { raw };
+                    for (int i = 0; i &lt; lines.Length; i++) {
+                        var text = sse ? lines[i].TrimEnd('\r') : lines[i];
+                        if (sse) {
+                            if (!text.StartsWith("data:")) { continue; }
+                            text = text.Substring(5).Trim();
+                        }
+                        JToken msg;
+                        try { msg = JToken.Parse(text); } catch { continue; }
+                        var items = msg is JArray ? (IEnumerable&lt;JToken&gt;)msg : new JToken[] { msg };
+                        foreach (var item in items) {
+                            var tools = item.SelectToken("result.tools") as JArray;
+                            if (tools == null) { continue; }
+                            foreach (var tool in tools.ToList()) {
+                                var n = (((string)tool["name"]) ?? "").ToLowerInvariant();
+                                if (Array.IndexOf(hidden, n) >= 0) { tool.Remove(); }
+                            }
+                        }
+                        var json = msg.ToString(Newtonsoft.Json.Formatting.None);
+                        lines[i] = sse ? "data: " + json : json;
+                    }
+                    return string.Join("\n", lines);
+                }</set-body>
+            </when>
+        </choose>
     </outbound>
     <on-error>
         <base />
