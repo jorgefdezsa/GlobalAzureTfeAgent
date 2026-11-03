@@ -16,6 +16,8 @@ services:
             # URL pública del servidor MCP (o del AI Gateway): azd env set MCP_URL https://.../mcp
             MCP_URL: ${MCP_URL}
             MCP_SUBSCRIPTION_KEY: ${MCP_SUBSCRIPTION_KEY}
+            # Cabecera de la clave (x-mcp-key con el gateway): azd env set MCP_KEY_HEADER x-mcp-key
+            MCP_KEY_HEADER: ${MCP_KEY_HEADER}
         host: azure.ai.agent
         kind: hosted
         language: docker

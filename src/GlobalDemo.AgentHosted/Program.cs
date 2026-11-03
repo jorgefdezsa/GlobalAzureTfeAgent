@@ -3,8 +3,7 @@ using Azure.AI.Projects;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Foundry.Hosting;
-using Microsoft.Extensions.AI;
-using ModelContextProtocol.Client;
+using GlobalDemo.AgentHosted;
 
 // Agente hospedado en Foundry: expone /responses (protocolo Responses) en el puerto 8088.
 // Foundry inyecta FOUNDRY_PROJECT_ENDPOINT y el nombre del despliegue; MCP_URL lo declara agent.yaml.
@@ -19,17 +18,18 @@ var mcpUrl = Environment.GetEnvironmentVariable("MCP_URL")
 // En la parte 2, MCP_URL apunta al AI Gateway; si pide clave de suscripción, MCP_SUBSCRIPTION_KEY.
 var http = new HttpClient();
 if (Environment.GetEnvironmentVariable("MCP_SUBSCRIPTION_KEY") is { Length: > 0 } key)
-    http.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
+    http.DefaultRequestHeaders.Add(Environment.GetEnvironmentVariable("MCP_KEY_HEADER") is { Length: > 0 } header ? header : "Ocp-Apim-Subscription-Key", key);
 
-await using var mcp = await McpClient.CreateAsync(
-    new HttpClientTransport(new HttpClientTransportOptions { Endpoint = new Uri(mcpUrl), Name = "aviation" }, http));
-var tools = await mcp.ListToolsAsync();
-Console.WriteLine($"MCP {mcpUrl}: {tools.Count} tools ({string.Join(", ", tools.Select(t => t.Name))})");
+// Las tools tienen esquema fijo y el MCP solo se llama al usarlas: arrancar no depende de que el gateway esté abierto.
+var tools = new AviationMcpTools(new Uri(mcpUrl), http).CreateTools();
+Console.WriteLine($"MCP {mcpUrl}: {tools.Count} tools de esquema fijo");
 
 const string instructions = """
     Eres el asistente de vuelos de Limusinas Tenerife. Ayudas al equipo a consultar vuelos, aeropuertos y aerolíneas
     para organizar recogidas de pasajeros. Usa siempre las herramientas para obtener datos de vuelos; no los inventes.
     Si un vuelo no aparece o una herramienta falla o no está disponible, dilo con claridad y sugiere una alternativa.
+    Si el resultado de una herramienta tiene status "blocked", di que la herramienta está bloqueada por el administrador,
+    cita el mensaje y no reintentes.
     Responde en español, breve y con las horas en formato local.
     """;
 
@@ -38,7 +38,7 @@ AIAgent agent = new AIProjectClient(projectEndpoint, new DefaultAzureCredential(
         model: deployment,
         instructions: instructions,
         name: "AsistenteVuelos",
-        tools: [.. tools.Cast<AITool>()]);
+        tools: tools);
 
 var builder = AgentHost.CreateBuilder(args);
 // Sobrecarga sobre el builder (no sobre builder.Services): en Foundry hospedado la otra lanza InvalidOperationException.

@@ -5,6 +5,8 @@
 #   AVIATIONSTACK_KEY=<clave> bash deploy/deploy-mcp.sh
 #
 # Crea (si no existen) en el grupo GlobalAzureTenerife: un ACR Basic, un entorno de Container Apps y la app `mcp-aviation`.
+# Es el despliegue inicial, antes del gateway. Si el MCP ya está detrás de API Management, usa deploy/lock-backend.sh:
+# esta ejecución dejaría la clave del cliente como clave de backend y el gateway dejaría de poder llamarlo.
 # Cada ejecución genera una clave nueva para /mcp (rota la anterior) y la guarda en azd; no se imprime.
 set -euo pipefail
 export PATH="$PATH:/opt/homebrew/bin"

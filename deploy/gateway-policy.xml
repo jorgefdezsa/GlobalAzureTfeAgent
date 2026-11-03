@@ -1,0 +1,38 @@
+<policies>
+    <!--
+      Policy del servidor MCP en API Management (AI Gateway). Requiere dos named values secretos:
+        mcp-gateway-key  clave que presentan los clientes en x-mcp-key (la de la conexión de la tool y la del agente)
+        mcp-backend-key  clave que solo conocen el gateway y el MCP de Container Apps (x-backend-key)
+      y el interruptor mcp-blocked (true bloquea con 403). No leer context.Response.Body: rompe el streaming de MCP.
+    -->
+    <inbound>
+        <base />
+        <check-header name="x-mcp-key" failed-check-httpcode="401" failed-check-error-message="Unauthorized" ignore-case="true">
+            <value>{{mcp-gateway-key}}</value>
+        </check-header>
+        <choose>
+            <when condition='@("{{mcp-blocked}}" == "true")'>
+                <return-response>
+                    <set-status code="403" reason="Forbidden" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>{"error":{"code":"AccessBlockedByGateway","message":"Access to server 'aviation-mcp' is blocked."}}</set-body>
+                </return-response>
+            </when>
+        </choose>
+        <set-header name="x-mcp-key" exists-action="delete" />
+        <set-header name="x-backend-key" exists-action="override">
+            <value>{{mcp-backend-key}}</value>
+        </set-header>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
