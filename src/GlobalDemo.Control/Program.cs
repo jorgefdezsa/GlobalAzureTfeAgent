@@ -33,12 +33,18 @@ app.MapGet("/api/state", async (ArmClient arm, ControlOptions o, CancellationTok
     try
     {
         var state = await arm.ReadAsync(ct);
-        return Results.Ok(new { state.BlockedAll, state.BlockedTools, state.RateLimit, AgentConfigured = o.AgentEndpoint.Length > 0, Apim = o.Apim });
+        return Results.Ok(new { state.BlockedAll, state.BlockedTools, state.RateLimit, AgentConfigured = o.AgentEndpoint.Length > 0, Apim = o.Apim, PriceInput = o.PriceInputPerMillion, PriceCached = o.PriceCachedPerMillion, PriceOutput = o.PriceOutputPerMillion });
     }
     catch (Exception ex)
     {
         return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway);
     }
+});
+
+app.MapGet("/api/guardrail", async (ArmClient arm, CancellationToken ct) =>
+{
+    try { return Results.Ok(await arm.ReadGuardrailAsync(ct)); }
+    catch (Exception ex) { return Results.Problem(ex.Message, statusCode: StatusCodes.Status502BadGateway); }
 });
 
 app.MapPost("/api/blocks/all", async (BlockAllRequest req, ArmClient arm, RequestLog log, CancellationToken ct) =>
@@ -145,7 +151,7 @@ app.MapPost("/api/chat", async (ChatRequest req, HttpContext ctx, IHttpClientFac
         if (seen.Length < 400_000) seen.Append(Encoding.UTF8.GetString(buffer, 0, read));
     }
 
-    var outcome = !response.IsSuccessStatusCode ? "error" : seen.ToString().Contains("AccessBlockedByGateway") ? "bloqueado" : seen.ToString().Contains("rate_limited") ? "limitado" : "ok";
+    var outcome = !response.IsSuccessStatusCode ? "error" : seen.ToString().Contains("AccessBlockedByGateway") ? "bloqueado" : seen.ToString().Contains("rate_limited") ? "limitado" : seen.ToString().Contains("egress_denied") ? "bloqueado" : "ok";
     log.Add("chat", req.Message, (int)response.StatusCode, sw.ElapsedMilliseconds, outcome);
 });
 

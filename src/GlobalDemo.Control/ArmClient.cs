@@ -34,6 +34,29 @@ public sealed class ArmClient(IHttpClientFactory http, TokenCredential credentia
         return WriteValueAsync(ToolsId, list.Length == 0 ? "none" : list, ct);
     }
 
+    /// <summary>Lee la RAI policy del agente (guardrail de contenido + egress). Found = false si no existe: entonces el agente no filtra nada.</summary>
+    public async Task<GuardrailState> ReadGuardrailAsync(CancellationToken ct)
+    {
+        var token = await credential.GetTokenAsync(new TokenRequestContext(["https://management.azure.com/.default"]), ct);
+        using var request = new HttpRequestMessage(HttpMethod.Get,
+            $"https://management.azure.com/subscriptions/{options.SubscriptionId}/resourceGroups/{options.ResourceGroup}" +
+            $"/providers/Microsoft.CognitiveServices/accounts/{options.FoundryAccount}/raiPolicies/{options.GuardrailPolicy}?api-version=2026-05-15-preview");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+        using var response = await http.CreateClient("arm").SendAsync(request, ct);
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return new GuardrailState(false, false, "", []);
+        var body = await response.Content.ReadAsStringAsync(ct);
+        if (!response.IsSuccessStatusCode) throw new InvalidOperationException($"Foundry {(int)response.StatusCode} al leer la policy: {body}");
+        var props = JsonNode.Parse(body)?["properties"];
+        var jailbreak = props?["contentFilters"]?.AsArray().Any(f =>
+            f?["name"]?.GetValue<string>() == "Jailbreak" && f["source"]?.GetValue<string>() == "Prompt" &&
+            f["enabled"]?.GetValue<bool>() == true && f["blocking"]?.GetValue<bool>() == true) ?? false;
+        var egress = props?["egressPolicy"];
+        var hosts = egress?["rules"]?.AsArray()
+            .Where(r => r?["action"]?["actionType"]?.GetValue<string>() == "Allow")
+            .Select(r => r?["match"]?["host"]?.GetValue<string>() ?? "*").ToArray() ?? [];
+        return new GuardrailState(true, jailbreak, egress?["mode"]?.GetValue<string>() ?? "", hosts);
+    }
+
     private string Url(string id) =>
         $"https://management.azure.com/subscriptions/{options.SubscriptionId}/resourceGroups/{options.ResourceGroup}" +
         $"/providers/Microsoft.ApiManagement/service/{options.Apim}/namedValues/{id}?{Api}";

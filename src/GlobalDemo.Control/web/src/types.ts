@@ -1,6 +1,8 @@
 export type Tool = { name: string; description: string; sampleArgs: Record<string, unknown> }
 
-export type GatewayState = { blockedAll: boolean; blockedTools: string[]; rateLimit: number; agentConfigured: boolean; apim: string }
+export type GatewayState = { blockedAll: boolean; blockedTools: string[]; rateLimit: number; agentConfigured: boolean; apim: string; priceInput?: number; priceCached?: number; priceOutput?: number }
+
+export type Guardrail = { found: boolean; jailbreakBlocking: boolean; egressMode: string; allowedHosts: string[] }
 
 export type AuditEntry = { at: string; client: string; tool: string; args: string; outcome: string; status: number | null }
 
@@ -12,7 +14,7 @@ export type LogEntry = { at: string; kind: string; detail: string; status: numbe
 
 export type ToolResult = { mode: string; status: number; ms: number; outcome: Outcome; body: string }
 
-export type StepState = 'ok' | 'blocked' | 'limited' | 'error' | 'pending'
+export type StepState = 'ok' | 'blocked' | 'limited' | 'egress' | 'error' | 'pending'
 
 export type TraceStep = { label: string; detail?: string; state: StepState }
 
@@ -20,6 +22,8 @@ export type Trace = { id: number; title: string; at: string; ms?: number; steps:
 
 export type ToolChip = { name: string; state: StepState }
 
-export type Message = { role: 'user' | 'assistant'; text: string; tools: ToolChip[] }
+export type Usage = { input: number; cached: number; output: number }
+
+export type Message = { role: 'user' | 'assistant'; text: string; tools: ToolChip[]; usage?: Usage }
 
 export type Mode = 'gateway' | 'direct'

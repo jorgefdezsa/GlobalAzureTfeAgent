@@ -41,6 +41,9 @@ builder.AddProject<Projects.GlobalDemo_Control>("control")
     .WithEnvironment("Control__McpGatewayUrl", azd["MCP_URL"])
     .WithEnvironment("Control__McpKey", azd["MCP_PANEL_KEY"] is { Length: > 0 } panelKey ? panelKey : azd["MCP_SUBSCRIPTION_KEY"])
     .WithEnvironment("Control__McpDirectUrl", azd["MCP_DIRECT_URL"])
-    .WithEnvironment("Control__AppInsights", azd["AUDIT_APPINSIGHTS_NAME"]);
+    .WithEnvironment("Control__AppInsights", azd["AUDIT_APPINSIGHTS_NAME"])
+    .WithEnvironment("Control__PriceInputPerMillion", azd["MODEL_PRICE_INPUT"])
+    .WithEnvironment("Control__PriceCachedPerMillion", azd["MODEL_PRICE_CACHED"])
+    .WithEnvironment("Control__PriceOutputPerMillion", azd["MODEL_PRICE_OUTPUT"]);
 
 builder.Build().Run();

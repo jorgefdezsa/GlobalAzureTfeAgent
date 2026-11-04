@@ -4,7 +4,7 @@ import ChatPanel from './ChatPanel'
 import GatewayPanel from './GatewayPanel'
 import Header from './Header'
 import TracePanel from './TracePanel'
-import type { GatewayState, LogEntry, Message, Mode, StepState, Tool, ToolResult, Trace, TraceStep } from './types'
+import type { GatewayState, Guardrail, LogEntry, Message, Mode, StepState, Tool, ToolResult, Trace, TraceStep } from './types'
 
 const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
@@ -12,6 +12,7 @@ export default function App() {
   const [tools, setTools] = useState<Tool[]>([])
   const [gw, setGw] = useState<GatewayState | null>(null)
   const [gwError, setGwError] = useState<string | null>(null)
+  const [guardrail, setGuardrail] = useState<Guardrail | null>(null)
   const [requests, setRequests] = useState<LogEntry[]>([])
   const [mode, setMode] = useState<Mode>('gateway')
   const [messages, setMessages] = useState<Message[]>([])
@@ -30,6 +31,13 @@ export default function App() {
     } catch (e) {
       setGwError(errorText(e))
     }
+  }, [])
+  // Estado real de la RAI policy (guardrail + egress). Si no se puede leer, la cabecera no muestra nada en lugar de inventar.
+  useEffect(() => {
+    const load = () => api.getGuardrail().then(setGuardrail).catch(() => setGuardrail(null))
+    load()
+    const t = setInterval(load, 30000)
+    return () => clearInterval(t)
   }, [])
   const refreshRequests = useCallback(() => api.getRequests().then(setRequests).catch(() => {}), [])
 
@@ -82,13 +90,14 @@ export default function App() {
           patchLastAssistant((m) => ({ ...m, text: m.text + ev.delta }))
         } else if (ev.type === 'response.output_item.done' && ev.item?.type === 'function_call') {
           patchLastAssistant((m) => ({ ...m, tools: [...m.tools, { name: ev.item.name, state: 'pending' }] }))
-          addStep({ label: 'Agente → AI Gateway', detail: `tools/call ${ev.item.name} ${ev.item.arguments ?? ''}`, state: 'pending' })
+          addStep({ label: ev.item.name === 'consultar_url' ? 'Agente → Internet (egress del agente)' : 'Agente → AI Gateway', detail: `tools/call ${ev.item.name} ${ev.item.arguments ?? ''}`, state: 'pending' })
         } else if (ev.type === 'response.output_item.done' && ev.item?.type === 'function_call_output') {
           const out = typeof ev.item.output === 'string' ? ev.item.output : JSON.stringify(ev.item.output)
           const blocked = out.includes('"status":"blocked"')
           const limited = out.includes('"status":"rate_limited"')
-          const failed = !blocked && !limited && /"status":"(gateway_error|tool_error)"/.test(out)
-          const state: StepState = blocked ? 'blocked' : limited ? 'limited' : failed ? 'error' : 'ok'
+          const egress = out.includes('"status":"egress_denied"')
+          const failed = !blocked && !limited && !egress && /"status":"(gateway_error|tool_error|error|http_error)"/.test(out)
+          const state: StepState = blocked ? 'blocked' : limited ? 'limited' : egress ? 'egress' : failed ? 'error' : 'ok'
           patchLastAssistant((m) => {
             const at = m.tools.map((t) => t.state).lastIndexOf('pending')
             return { ...m, tools: m.tools.map((t, i) => (i === at ? { ...t, state } : t)) }
@@ -100,6 +109,8 @@ export default function App() {
               ? '403 AccessBlockedByGateway · la policy corta la llamada y no llega al MCP'
               : limited
                 ? '429 · el rate limit del gateway corta la llamada y no llega al MCP'
+                : egress
+                ? '403 · el proxy de egress de Foundry deniega el destino: el agente solo puede salir por el AI Gateway'
                 : failed
                 ? out.slice(0, 160)
                 : `200 · el MCP responde (${out.length} caracteres)`
@@ -107,6 +118,8 @@ export default function App() {
           })
         } else if (ev.type === 'response.completed') {
           setPreviousId(ev.response.id)
+          const u = ev.response.usage
+          if (u) patchLastAssistant((m) => ({ ...m, usage: { input: u.input_tokens ?? 0, cached: u.input_tokens_details?.cached_tokens ?? 0, output: u.output_tokens ?? 0 } }))
         } else if (ev.type === 'response.failed') {
           throw new Error(ev.response?.error?.message ?? 'La respuesta falló')
         }
@@ -222,13 +235,14 @@ export default function App() {
     <div className="app">
       <Header
         online={!!gw && !gwError && gw.agentConfigured}
+        guardrail={guardrail}
         mode={mode}
         onMode={setMode}
         session={previousId ? previousId.slice(-6) : null}
         onNewConversation={newConversation}
       />
       <main className="grid">
-        <ChatPanel messages={messages} busy={busy} onSend={send} />
+        <ChatPanel messages={messages} busy={busy} onSend={send} priceInput={gw?.priceInput ?? 0} priceCached={gw?.priceCached ?? 0} priceOutput={gw?.priceOutput ?? 0} />
         <div className="right">
           <TracePanel traces={traces} index={traceIndex} onIndex={setTraceIndex} />
           <GatewayPanel

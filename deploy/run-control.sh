@@ -22,6 +22,9 @@ export Control__McpGatewayUrl="$(azd env get-value MCP_URL)"
 # El panel se identifica con su propia clave (mcp-key-panel, creada por setup-audit.sh); si no existe, usa la del agente.
 export Control__McpKey="$(azd env get-value MCP_PANEL_KEY 2>/dev/null || azd env get-value MCP_SUBSCRIPTION_KEY)"
 export Control__AppInsights="$(azd env get-value AUDIT_APPINSIGHTS_NAME 2>/dev/null || true)"
+export Control__PriceInputPerMillion="${Control__PriceInputPerMillion:-$(azd env get-value MODEL_PRICE_INPUT 2>/dev/null || true)}"
+export Control__PriceCachedPerMillion="${Control__PriceCachedPerMillion:-$(azd env get-value MODEL_PRICE_CACHED 2>/dev/null || true)}"
+export Control__PriceOutputPerMillion="${Control__PriceOutputPerMillion:-$(azd env get-value MODEL_PRICE_OUTPUT 2>/dev/null || true)}"
 export Control__McpDirectUrl="https://$(az containerapp show -n "$APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)/mcp"
 # El AppHost de Aspire lo lee de azd (no ejecuta az): se guarda aquí.
 azd env set MCP_DIRECT_URL "$Control__McpDirectUrl" >/dev/null 2>&1 || true

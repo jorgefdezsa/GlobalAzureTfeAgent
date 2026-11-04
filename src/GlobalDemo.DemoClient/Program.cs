@@ -88,8 +88,9 @@ static void ShowItem(JsonElement item)
             bool blocked = output.Contains("\"status\":\"blocked\"", StringComparison.Ordinal);
             string shown = output.Length > 240 ? output[..240] + "…" : output;
             bool limited = output.Contains("\"status\":\"rate_limited\"", StringComparison.Ordinal);
-            Paint(blocked ? ConsoleColor.Red : limited ? ConsoleColor.Yellow : ConsoleColor.Green,
-                $"{(blocked ? "[BLOCKED]" : limited ? "[LIMITED]" : "[RESULT]")} {shown}");
+            bool egress = output.Contains("\"status\":\"egress_denied\"", StringComparison.Ordinal);
+            Paint(blocked || egress ? ConsoleColor.Red : limited ? ConsoleColor.Yellow : ConsoleColor.Green,
+                $"{(blocked ? "[BLOCKED]" : egress ? "[EGRESS]" : limited ? "[LIMITED]" : "[RESULT]")} {shown}");
             break;
     }
 }

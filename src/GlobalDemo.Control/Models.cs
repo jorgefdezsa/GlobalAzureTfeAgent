@@ -10,6 +10,10 @@ public sealed class ControlOptions
     public string ResourceGroup { get; set; } = "GlobalAzureTenerife";
     public string Apim { get; set; } = "apim-globaltfe";
 
+    /// <summary>Cuenta de Foundry y RAI policy (guardrail + egress) que se muestran en la cabecera.</summary>
+    public string FoundryAccount { get; set; } = "globalazureagent";
+    public string GuardrailPolicy { get; set; } = "demo1-guardrail";
+
     /// <summary>Application Insights donde el gateway envía la auditoría (vacío = pestaña desactivada).</summary>
     public string AppInsights { get; set; } = "";
 
@@ -22,7 +26,14 @@ public sealed class ControlOptions
 
     /// <summary>Clave del cliente (x-mcp-key), la misma del agente y la conexión de Foundry.</summary>
     public string McpKey { get; set; } = "";
+
+    /// <summary>Precio del modelo por millón de tokens (USD) para estimar el coste en el chat; 0 = solo se muestran tokens.</summary>
+    public double PriceInputPerMillion { get; set; }
+    public double PriceCachedPerMillion { get; set; }
+    public double PriceOutputPerMillion { get; set; }
 }
+
+public sealed record GuardrailState(bool Found, bool JailbreakBlocking, string EgressMode, string[] AllowedHosts);
 
 public sealed record ChatRequest(string Message, string? PreviousResponseId);
 

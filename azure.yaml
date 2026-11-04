@@ -20,6 +20,11 @@ services:
             MCP_KEY_HEADER: ${MCP_KEY_HEADER}
         host: azure.ai.agent
         kind: hosted
+        # Guardrail + control de egress (deploy/setup-guardrails.sh crea la policy y guarda su ID ARM completo).
+        # azd no expande variables aquí: el ID va literal (lo imprime setup-guardrails.sh; cámbialo si cambia la suscripción).
+        policies:
+            - type: rai_policy
+              raiPolicyName: /subscriptions/6b514360-d1db-4639-8f79-ea84de62691f/resourceGroups/GlobalAzureTenerife/providers/Microsoft.CognitiveServices/accounts/globalazureagent/raiPolicies/demo1-guardrail
         language: docker
         name: asistente-vuelos
         project: src/GlobalDemo.AgentHosted
