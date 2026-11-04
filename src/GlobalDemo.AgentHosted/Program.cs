@@ -22,6 +22,8 @@ if (Environment.GetEnvironmentVariable("MCP_SUBSCRIPTION_KEY") is { Length: > 0 
 
 // Las tools tienen esquema fijo y el MCP solo se llama al usarlas: arrancar no depende de que el gateway esté abierto.
 var tools = new AviationMcpTools(new Uri(mcpUrl), http).CreateTools();
+// Solo para la demo del control de egress: un "atajo" que intenta salir a cualquier URL (ver ConsultarUrlTool).
+tools.Add(new ConsultarUrlTool().Create());
 Console.WriteLine($"MCP {mcpUrl}: {tools.Count} tools de esquema fijo");
 
 const string instructions = """
@@ -32,6 +34,8 @@ const string instructions = """
     cita el mensaje y no reintentes.
     Si el resultado tiene status "rate_limited", di que el AI Gateway ha alcanzado el límite de llamadas por minuto,
     que hay que esperar un poco, y no reintentes en bucle ni llames a otras herramientas para esquivarlo.
+    Si consultar_url devuelve status "egress_denied", di que la política de egress del agente no le permite salir a ese destino
+    (solo puede salir por el AI Gateway), cita el host y no reintentes ni busques otra forma de llegar a él.
     Responde en español, breve y con las horas en formato local.
     """;
 
