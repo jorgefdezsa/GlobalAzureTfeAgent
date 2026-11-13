@@ -31,6 +31,9 @@ public sealed class ControlOptions
     public double PriceInputPerMillion { get; set; }
     public double PriceCachedPerMillion { get; set; }
     public double PriceOutputPerMillion { get; set; }
+
+    /// <summary>Clave que exige /api en la cabecera x-panel-key. Vacía = sin clave (uso local). Solo la define el panel publicado en Azure.</summary>
+    public string PanelKey { get; set; } = "";
 }
 
 public sealed record GuardrailState(bool Found, bool JailbreakBlocking, string EgressMode, string[] AllowedHosts);

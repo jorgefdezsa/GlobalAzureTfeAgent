@@ -23,6 +23,7 @@ builder.Services.AddHttpClient("mcp", c => c.Timeout = TimeSpan.FromSeconds(90))
 builder.Services.AddHttpClient("arm", c => c.Timeout = TimeSpan.FromSeconds(30));
 
 var app = builder.Build();
+app.UsePanelKey(); // solo hace algo si existe Control__PanelKey (panel publicado en Azure)
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -197,6 +198,8 @@ app.MapPost("/api/tool-test", async (ToolTestRequest req, IHttpClientFactory htt
         return Results.Ok(new { req.Mode, Status = 0, Ms = sw.ElapsedMilliseconds, Outcome = "error", Body = ex.Message });
     }
 });
+
+app.MapChatSync(); // POST /api/chat-sync: el chat sin streaming, para la Canvas App
 
 app.MapFallbackToFile("index.html");
 

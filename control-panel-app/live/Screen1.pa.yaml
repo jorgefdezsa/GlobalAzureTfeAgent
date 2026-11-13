@@ -1,0 +1,2010 @@
+Screens:
+  Screen1:
+    Properties:
+      Fill: =colFondo
+      LoadingSpinnerColor: =colCian
+    Children:
+      - conRaiz:
+          Control: GroupContainer
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =16
+            PaddingLeft: =16
+            PaddingRight: =16
+            PaddingTop: =16
+            Width: =Parent.Width
+          Children:
+            - conCabecera:
+                Control: GroupContainer
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =96
+                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =16
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                Children:
+                  - conTitulo:
+                      Control: GroupContainer
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutAlignItems: =LayoutAlignItems.Stretch
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutJustifyContent: =LayoutJustifyContent.Center
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                      Children:
+                        - lblTitulo:
+                            Control: Label
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Color: =colCian
+                              Font: =Font.'Segoe UI'
+                              FontWeight: =FontWeight.Semibold
+                              Height: =29
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Role: =TextRole.Heading1
+                              Size: =17.1
+                              Text: ="Control Panel v2.0 · asistente-vuelos"
+                              Wrap: =false
+                        - lblSubtitulo:
+                            Control: Label
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Color: =colApagado
+                              Font: =Font.'Segoe UI'
+                              Height: =44
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Size: =12.6
+                              Text: ="Foundry Hosted Agent · .NET 10 · Agent Framework | tools por MCP | gobernado desde Foundry (AI Gateway)"
+                              VerticalAlign: =VerticalAlign.Top
+                  - conCabDerecha:
+                      Control: GroupContainer
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        LayoutAlignItems: =LayoutAlignItems.Stretch
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =8
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        Width: =704
+                      Children:
+                        - conPildoras:
+                            Control: GroupContainer
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =44
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              LayoutJustifyContent: =LayoutJustifyContent.End
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                            Children:
+                              - conPildoraGuardrail:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    BorderColor: =If(varGuardrail.found && varGuardrail.jailbreakBlocking, colVerde, colRojo)
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    Height: =42
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =12
+                                    PaddingRight: =12
+                                    RadiusBottomLeft: =22
+                                    RadiusBottomRight: =22
+                                    RadiusTopLeft: =22
+                                    RadiusTopRight: =22
+                                    Visible: =Not(IsBlank(varGuardrail))
+                                    Width: =180
+                                  Children:
+                                    - lblGuardrail:
+                                        Control: Label
+                                        Properties:
+                                          Align: =Align.Center
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =If(varGuardrail.found && varGuardrail.jailbreakBlocking, colVerde, colRojo)
+                                          FillPortions: =1
+                                          Font: =Font.'Segoe UI'
+                                          FontWeight: =FontWeight.Semibold
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Size: =12.6
+                                          Text: |-
+                                            =If(varGuardrail.found && varGuardrail.jailbreakBlocking, "🛡 Guardrail activo", "⚠ Sin guardrail")
+                                          Wrap: =false
+                              - conPildoraEgress:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    BorderColor: =If(varGuardrail.egressMode = "Enforced", colVerde, colAmbar)
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    Height: =42
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =12
+                                    PaddingRight: =12
+                                    RadiusBottomLeft: =22
+                                    RadiusBottomRight: =22
+                                    RadiusTopLeft: =22
+                                    RadiusTopRight: =22
+                                    Visible: =Not(IsBlank(varGuardrail)) && varGuardrail.found && Not(IsBlank(varGuardrail.egressMode))
+                                    Width: =250
+                                  Children:
+                                    - lblEgress:
+                                        Control: Label
+                                        Properties:
+                                          Align: =Align.Center
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =If(varGuardrail.egressMode = "Enforced", colVerde, colAmbar)
+                                          FillPortions: =1
+                                          Font: =Font.'Segoe UI'
+                                          FontWeight: =FontWeight.Semibold
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Size: =12.6
+                                          Text: =If(varGuardrail.egressMode = "Enforced", "Egress · solo el AI Gateway", "Egress · en auditoría")
+                                          Tooltip: =Concat(varGuardrail.allowedHosts, Value, ", ")
+                                          Wrap: =false
+                              - conPildoraAgente:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    BorderColor: =If(Not(IsBlank(varGw)) && IsBlank(varGwError) && varGw.agentConfigured, colVerde, colRojo)
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    Height: =42
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutGap: =8
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =14
+                                    PaddingRight: =12
+                                    RadiusBottomLeft: =22
+                                    RadiusBottomRight: =22
+                                    RadiusTopLeft: =22
+                                    RadiusTopRight: =22
+                                    Width: =155
+                                  Children:
+                                    - conPuntoAgente:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          Fill: =If(Not(IsBlank(varGw)) && IsBlank(varGwError) && varGw.agentConfigured, colVerde, colRojo)
+                                          FillPortions: =0
+                                          Height: =12
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =6
+                                          RadiusBottomRight: =6
+                                          RadiusTopLeft: =6
+                                          RadiusTopRight: =6
+                                          Width: =12
+                                    - lblAgente:
+                                        Control: Label
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =If(Not(IsBlank(varGw)) && IsBlank(varGwError) && varGw.agentConfigured, colVerde, colRojo)
+                                          FillPortions: =1
+                                          Font: =Font.'Segoe UI'
+                                          FontWeight: =FontWeight.Semibold
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Size: =12.6
+                                          Text: =If(Not(IsBlank(varGw)) && IsBlank(varGwError) && varGw.agentConfigured, "Agente activo", "Sin conexión")
+                                          Wrap: =false
+                        - conControles:
+                            Control: GroupContainer
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =44
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =12
+                              LayoutJustifyContent: =LayoutJustifyContent.End
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                            Children:
+                              - conModo:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    Height: =44
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    Width: =360
+                                  Children:
+                                    - btnModoGateway:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =If(varModo = "gateway", colFondo, colTexto)
+                                          Fill: =If(varModo = "gateway", colCian, colPanel2)
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =Self.Color
+                                          HoverFill: =If(varModo = "gateway", colCian, colLinea)
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnSelect: =Set(varModo, "gateway")
+                                          PressedBorderColor: =colLinea
+                                          PressedFill: =If(varModo = "gateway", colCian, colLinea)
+                                          RadiusBottomLeft: =8
+                                          RadiusBottomRight: =0
+                                          RadiusTopLeft: =8
+                                          RadiusTopRight: =0
+                                          Size: =12.6
+                                          Text: ="Vía AI Gateway"
+                                          Tooltip: =If(varModo = "gateway", "Modo activo", "")
+                                          Width: =180
+                                    - btnModoDirecto:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =If(varModo = "direct", colFondo, colTexto)
+                                          Fill: =If(varModo = "direct", colCian, colPanel2)
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =Self.Color
+                                          HoverFill: =If(varModo = "direct", colCian, colLinea)
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnSelect: =Set(varModo, "direct")
+                                          PressedBorderColor: =colLinea
+                                          PressedFill: =If(varModo = "direct", colCian, colLinea)
+                                          RadiusBottomLeft: =0
+                                          RadiusBottomRight: =8
+                                          RadiusTopLeft: =0
+                                          RadiusTopRight: =8
+                                          Size: =12.6
+                                          Text: ="Directo al backend"
+                                          Tooltip: =If(varModo = "direct", "Modo activo", "")
+                                          Width: =180
+                              - lblSesion:
+                                  Control: Label
+                                  Properties:
+                                    Align: =Align.Center
+                                    AlignInContainer: =AlignInContainer.Center
+                                    Color: =colApagado
+                                    Font: =Font.'Courier New'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: =If(IsBlank(varPreviousId), "Sesión nueva", "Sesión " & Right(varPreviousId, 6))
+                                    Width: =130
+                                    Wrap: =false
+                              - btnNuevaConversacion:
+                                  Control: Classic/Button
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Center
+                                    AutoDisableOnSelect: =false
+                                    BorderColor: =colLinea
+                                    BorderThickness: =1
+                                    Color: =colTexto
+                                    Fill: =colPanel2
+                                    FocusedBorderColor: =colTexto
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    HoverBorderColor: =colLinea
+                                    HoverColor: =colTexto
+                                    HoverFill: =colLinea
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    OnSelect: |-
+                                      =Clear(colMensajes);
+                                      Set(varPreviousId, "");
+                                      Set(varOcupado, false)
+                                    PressedBorderColor: =colLinea
+                                    PressedColor: =colTexto
+                                    PressedFill: =colLinea
+                                    RadiusBottomLeft: =8
+                                    RadiusBottomRight: =8
+                                    RadiusTopLeft: =8
+                                    RadiusTopRight: =8
+                                    Size: =12.6
+                                    Text: ="Nueva conversación"
+                                    Width: =190
+            - conCuerpo:
+                Control: GroupContainer
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =16
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  PaddingTop: =16
+                Children:
+                  - conChat:
+                      Control: GroupContainer
+                      Variant: AutoLayout
+                      Properties:
+                        BorderColor: =colLinea
+                        BorderThickness: =1
+                        DropShadow: =DropShadow.None
+                        Fill: =colPanel
+                        FillPortions: =48
+                        LayoutAlignItems: =LayoutAlignItems.Stretch
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =8
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        PaddingBottom: =16
+                        PaddingLeft: =18
+                        PaddingRight: =18
+                        PaddingTop: =16
+                        RadiusBottomLeft: =14
+                        RadiusBottomRight: =14
+                        RadiusTopLeft: =14
+                        RadiusTopRight: =14
+                      Children:
+                        - lblChTitulo:
+                            Control: Label
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Color: =colTexto
+                              Font: =Font.'Segoe UI'
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              LayoutMinHeight: =28
+                              LayoutMinWidth: =0
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Size: =14.4
+                              Text: ="Conversación con el agente (v2)"
+                              Wrap: =false
+                        - lblChResumen:
+                            Control: Label
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Color: =colApagado
+                              Font: =Font.'Segoe UI'
+                              Height: =24
+                              LayoutMinHeight: =24
+                              LayoutMinWidth: =0
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Size: =12.6
+                              Text: |-
+                                ="Conversación: " & Text(Sum(colMensajes, entrada), "#,##0") & " tokens in · " & Text(Sum(colMensajes, salida), "#,##0") & " out" & If(Sum(colMensajes, coste) > 0, " · ≈ " & Text(Sum(colMensajes, coste), If(Sum(colMensajes, coste) < 0.01, "0.0000", "0.00")) & " $", "")
+                              Visible: =Sum(colMensajes, entrada) + Sum(colMensajes, salida) > 0
+                              Wrap: =false
+                        - galChMensajes:
+                            Control: Gallery
+                            Variant: VariableHeight
+                            Properties:
+                              AccessibleLabel: ="Mensajes de la conversación"
+                              Fill: =colPanel
+                              Height: =320
+                              Items: =Filter(colMensajes, rol = "user")
+                              LayoutMinHeight: =240
+                              LayoutMinWidth: =0
+                              TabIndex: =0
+                              TemplatePadding: =2
+                            Children:
+                              - conChMsg:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =8
+                                    PaddingBottom: =24
+                                    PaddingTop: =2
+                                    Width: =Parent.TemplateWidth
+                                  Children:
+                                    - lblChTexto:
+                                        Control: Label
+                                        Properties:
+                                          Align: =Align.Right
+                                          AlignInContainer: =AlignInContainer.End
+                                          AutoHeight: =true
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =colTexto
+                                          Fill: =ColorValue("#123a78")
+                                          Font: =Font.'Segoe UI'
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =8
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =8
+                                          Size: =12.6
+                                          Text: =ThisItem.texto
+                                          Width: =Parent.Width * 0.86
+                                    - htmChTexto:
+                                        Control: HtmlViewer
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Start
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =colTexto
+                                          Fill: =colPanel2
+                                          Font: =Font.'Segoe UI'
+                                          Height: |-
+                                            =With(
+                                              {t: Substitute(If(LookUp(colMensajes, id = ThisItem.id + 1).texto = "", "Pensando…", LookUp(colMensajes, id = ThisItem.id + 1).texto), "**", ""), cpl: Max(8, RoundDown((Parent.Width * 0.86 - 26) / 6, 0))},
+                                              Max(32, Sum(Split(t, Char(10)), RoundUp(Max(1, Len(Value)) / cpl, 0)) * 19 + 18)
+                                            )
+                                          HtmlText: |-
+                                            =With(
+                                              {t: Substitute(Substitute(Substitute(If(LookUp(colMensajes, id = ThisItem.id + 1).texto = "", "Pensando…", LookUp(colMensajes, id = ThisItem.id + 1).texto), "&", "&amp;"), "<", "&lt;"), ">", "&gt;")},
+                                              Substitute(
+                                                Concat(
+                                                  Sequence(CountRows(Split(t, "**"))),
+                                                  With(
+                                                    {s: Index(Split(t, "**"), Value).Value},
+                                                    If(Mod(Value, 2) = 0, "<b>" & s & "</b>", s)
+                                                  )
+                                                ),
+                                                Char(10),
+                                                "<br>"
+                                              )
+                                            )
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =8
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =8
+                                          Size: =12.6
+                                          Width: =Parent.Width * 0.86
+                                    - lblChUso:
+                                        Control: Label
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Start
+                                          AutoHeight: =true
+                                          Color: =colApagado
+                                          Font: =Font.'Courier New'
+                                          LayoutMinHeight: =24
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =0
+                                          PaddingLeft: =4
+                                          PaddingRight: =4
+                                          PaddingTop: =0
+                                          Size: =12.6
+                                          Text: |-
+                                            =With({r: LookUp(colMensajes, id = ThisItem.id + 1)}, Trim(r.chips & If(r.chips <> "" && r.uso <> "", Char(10), "") & r.uso))
+                                          Visible: =LookUp(colMensajes, id = ThisItem.id + 1).chips <> "" || LookUp(colMensajes, id = ThisItem.id + 1).uso <> ""
+                                          Width: =Parent.Width * 0.86
+                        - galChSugerencias:
+                            Control: Gallery
+                            Variant: Vertical
+                            Properties:
+                              AccessibleLabel: ="Preguntas sugeridas"
+                              Fill: =colPanel
+                              FillPortions: =0
+                              Height: =104
+                              Items: =fxSugerencias
+                              LayoutMinHeight: =104
+                              LayoutMinWidth: =0
+                              TabIndex: =0
+                              TemplatePadding: =4
+                              TemplateSize: =48
+                            Children:
+                              - btnChSugerencia:
+                                  Control: Classic/Button
+                                  Properties:
+                                    Align: =Align.Left
+                                    AutoDisableOnSelect: =false
+                                    BorderColor: =If(ThisItem.guardrail, colMorado, colLinea)
+                                    BorderThickness: =1
+                                    Color: =colTexto
+                                    DisplayMode: =If(varOcupado, DisplayMode.Disabled, DisplayMode.Edit)
+                                    Fill: =colPanel2
+                                    FocusedBorderColor: =colTexto
+                                    Font: =Font.'Segoe UI'
+                                    Height: =Parent.TemplateHeight
+                                    HoverBorderColor: =If(ThisItem.guardrail, colMorado, colLinea)
+                                    HoverColor: =colTexto
+                                    HoverFill: =colLinea
+                                    OnSelect: |-
+                                      =Set(varEnvio, ThisItem.prompt);
+                                      Select(btnChEnviar)
+                                    PressedBorderColor: =If(ThisItem.guardrail, colMorado, colLinea)
+                                    PressedColor: =colTexto
+                                    PressedFill: =colLinea
+                                    RadiusBottomLeft: =8
+                                    RadiusBottomRight: =8
+                                    RadiusTopLeft: =8
+                                    RadiusTopRight: =8
+                                    Size: =12.6
+                                    Text: =ThisItem.etiqueta
+                                    Tooltip: =ThisItem.prompt
+                                    Width: =Parent.TemplateWidth
+                        - conChEntrada:
+                            Control: GroupContainer
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =100
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =8
+                              LayoutMinHeight: =44
+                              LayoutMinWidth: =0
+                            Children:
+                              - txtChMensaje:
+                                  Control: ModernTextInput
+                                  Properties:
+                                    AccessibleLabel: ="Mensaje para el agente"
+                                    AlignInContainer: =AlignInContainer.Center
+                                    BorderColor: =colLinea
+                                    BorderThickness: =1
+                                    Color: =colTexto
+                                    DisplayMode: =If(varOcupado, DisplayMode.Disabled, DisplayMode.Edit)
+                                    Fill: =colPanel2
+                                    FillPortions: =1
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    Placeholder: ="Pregunta por un vuelo..."
+                                    Size: =12.6
+                              - btnChEnviar:
+                                  Control: ModernButton
+                                  Properties:
+                                    AccessibleLabel: ="Enviar el mensaje al agente"
+                                    AlignInContainer: =AlignInContainer.Center
+                                    Appearance: =ButtonAppearance.Outline
+                                    BorderColor: =colCian
+                                    BorderThickness: =1
+                                    Color: =colCian
+                                    DisplayMode: =If(varOcupado, DisplayMode.Disabled, DisplayMode.Edit)
+                                    Font: =Font.'Segoe UI'
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =44
+                                    Layout: =ButtonLayout.TextOnly
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =120
+                                    OnSelect: |-
+                                      =Set(varTexto, If(Not(IsBlank(varEnvio)), varEnvio, Trim(txtChMensaje.Text)));
+                                      Set(varEnvio, "");
+                                      If(
+                                        Not(varOcupado) && Not(IsBlank(varTexto)),
+                                        Set(varOcupado, true);
+                                        Set(varIdMsg, Coalesce(Max(colMensajes, id), 0) + 1);
+                                        Collect(colMensajes, {id: varIdMsg, rol: "user", texto: varTexto, entrada: 0, cacheado: 0, salida: 0, coste: 0, chips: "", uso: ""});
+                                        Collect(colMensajes, {id: varIdMsg + 1, rol: "assistant", texto: "", entrada: 0, cacheado: 0, salida: 0, coste: 0, chips: "", uso: ""});
+                                        Reset(txtChMensaje);
+                                        Set(varNuevaTraza, Coalesce(Max(colTrazas, id), 0) + 1);
+                                        Collect(colTrazas, {id: varNuevaTraza, titulo: "Chat · " & Left(varTexto, 40), hora: Text(Now(), "hh:mm:ss"), ms: 0});
+                                        Collect(colPasos, {trazaId: varNuevaTraza, orden: 1, etiqueta: "Panel → Agente (Foundry)", detalle: "POST /responses", estado: "pending"});
+                                        Set(varTrazaIdx, 0);
+                                        Set(varChatError, "");
+                                        IfError(
+                                          Set(varChatResp, GlobalDemoControl.ChatSync(varTexto, {previousResponseId: varPreviousId})),
+                                          Set(varChatError, FirstError.Message)
+                                        );
+                                        If(varChatError = "" && Not(IsBlank(varChatResp.error)), Set(varChatError, varChatResp.error));
+                                        If(
+                                          varChatError <> "",
+                                          Patch(colMensajes, LookUp(colMensajes, id = varIdMsg + 1), {texto: "⚠ " & varChatError});
+                                          ForAll(Filter(colPasos, trazaId = varNuevaTraza && estado = "pending") As p, Patch(colPasos, p, {estado: "error"})),
+                                          Patch(colPasos, LookUp(colPasos, trazaId = varNuevaTraza && orden = 1), {estado: "ok"});
+                                          ForAll(
+                                            varChatResp.toolCalls As c,
+                                            Collect(colPasos, {trazaId: varNuevaTraza, orden: CountRows(Filter(colPasos, trazaId = varNuevaTraza)) + 1, etiqueta: If(c.name = "consultar_url", "Agente → Internet (egress del agente)", "Agente → AI Gateway"), detalle: "tools/call " & c.name & " " & c.arguments & Char(10) & c.detail, estado: c.state})
+                                          );
+                                          Collect(colPasos, {trazaId: varNuevaTraza, orden: CountRows(Filter(colPasos, trazaId = varNuevaTraza)) + 1, etiqueta: "Agente → Panel", detalle: "respuesta del modelo", estado: "ok"});
+                                          Set(varCoste, If(varGw.priceInput + varGw.priceOutput > 0, ((varChatResp.usage.input - varChatResp.usage.cached) * varGw.priceInput + varChatResp.usage.cached * varGw.priceCached + varChatResp.usage.output * varGw.priceOutput) / 1000000, 0));
+                                          Patch(
+                                            colMensajes,
+                                            LookUp(colMensajes, id = varIdMsg + 1),
+                                            {
+                                              texto: varChatResp.text,
+                                              entrada: varChatResp.usage.input,
+                                              cacheado: varChatResp.usage.cached,
+                                              salida: varChatResp.usage.output,
+                                              coste: varCoste,
+                                              chips: Concat(varChatResp.toolCalls, Switch(state, "ok", "✓ ", "blocked", "⛔ ", "egress", "🚫 ", "limited", "⏱ ", "error", "⚠ ", "") & name & Switch(state, "blocked", " · bloqueada", "egress", " · egress denegado", "limited", " · límite", ""), "   "),
+                                              uso: varChatResp.usage.input & " in" & If(varChatResp.usage.cached > 0, " (" & varChatResp.usage.cached & " en caché)", "") & " · " & varChatResp.usage.output & " out" & If(varCoste > 0, " · ≈ " & Text(varCoste, If(varCoste < 0.01, "0.0000", "0.00")) & " $", "")
+                                            }
+                                          );
+                                          Set(varPreviousId, varChatResp.responseId);
+                                          Patch(colTrazas, LookUp(colTrazas, id = varNuevaTraza), {ms: varChatResp.ms})
+                                        );
+                                        Set(varOcupado, false);
+                                        IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                      )
+                                    Size: =16
+                                    Text: =If(varOcupado, "Enviando…", "Enviar")
+                                    Width: =120
+                  - conDerecha:
+                      Control: GroupContainer
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =52
+                        LayoutAlignItems: =LayoutAlignItems.Stretch
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =16
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                      Children:
+                        - conTraza:
+                            Control: GroupContainer
+                            Variant: AutoLayout
+                            Properties:
+                              BorderColor: =colLinea
+                              BorderThickness: =1
+                              DropShadow: =DropShadow.None
+                              Fill: =colPanel
+                              FillPortions: =40
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              PaddingBottom: =16
+                              PaddingLeft: =18
+                              PaddingRight: =18
+                              PaddingTop: =16
+                              RadiusBottomLeft: =14
+                              RadiusBottomRight: =14
+                              RadiusTopLeft: =14
+                              RadiusTopRight: =14
+                            Children:
+                              - lblTrzTitulo:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colTexto
+                                    Font: =Font.'Segoe UI'
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =28
+                                    LayoutMinHeight: =28
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =14.4
+                                    Text: ="Traza de la última llamada"
+                                    Wrap: =false
+                              - lblTrzVacio:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colApagado
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: ="Envía un mensaje o prueba una tool para ver por dónde pasa la llamada."
+                                    Visible: =CountRows(colTrazas) = 0
+                              - conTrzCab:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutGap: =8
+                                    LayoutMinHeight: =48
+                                    LayoutMinWidth: =0
+                                    Visible: =CountRows(colTrazas) > 0
+                                  Children:
+                                    - conTrzTextos:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          DropShadow: =DropShadow.None
+                                          LayoutAlignItems: =LayoutAlignItems.Stretch
+                                          LayoutDirection: =LayoutDirection.Vertical
+                                          LayoutJustifyContent: =LayoutJustifyContent.Center
+                                          LayoutMinHeight: =48
+                                          LayoutMinWidth: =0
+                                        Children:
+                                          - lblTrzNombre:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Stretch
+                                                Color: =colCian
+                                                Font: =Font.'Segoe UI'
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =24
+                                                LayoutMinHeight: =24
+                                                LayoutMinWidth: =0
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =fxTraza.titulo
+                                                Wrap: =false
+                                          - lblTrzMeta:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Stretch
+                                                Color: =colApagado
+                                                Font: =Font.'Segoe UI'
+                                                Height: =24
+                                                LayoutMinHeight: =24
+                                                LayoutMinWidth: =0
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =fxTraza.hora & " · " & Text(fxTraza.ms / 1000, "0.0") & " s · " & fxTrazaPos & "/" & CountRows(colTrazas)
+                                                Wrap: =false
+                                    - btnTrzAnterior:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =colTexto
+                                          DisplayMode: =If(fxTrazaPos <= 1, DisplayMode.Disabled, DisplayMode.Edit)
+                                          Fill: =colPanel2
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =colTexto
+                                          HoverFill: =colLinea
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =44
+                                          OnSelect: =Set(varTrazaIdx, fxTrazaPos - 1)
+                                          PressedBorderColor: =colLinea
+                                          PressedColor: =colTexto
+                                          PressedFill: =colLinea
+                                          RadiusBottomLeft: =8
+                                          RadiusBottomRight: =8
+                                          RadiusTopLeft: =8
+                                          RadiusTopRight: =8
+                                          Size: =14.4
+                                          Text: ="‹"
+                                          Tooltip: ="Llamada anterior"
+                                          Width: =44
+                                    - btnTrzSiguiente:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =colTexto
+                                          DisplayMode: =If(fxTrazaPos >= CountRows(colTrazas), DisplayMode.Disabled, DisplayMode.Edit)
+                                          Fill: =colPanel2
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =colTexto
+                                          HoverFill: =colLinea
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =44
+                                          OnSelect: =Set(varTrazaIdx, If(fxTrazaPos + 1 >= CountRows(colTrazas), 0, fxTrazaPos + 1))
+                                          PressedBorderColor: =colLinea
+                                          PressedColor: =colTexto
+                                          PressedFill: =colLinea
+                                          RadiusBottomLeft: =8
+                                          RadiusBottomRight: =8
+                                          RadiusTopLeft: =8
+                                          RadiusTopRight: =8
+                                          Size: =14.4
+                                          Text: ="›"
+                                          Tooltip: ="Llamada siguiente"
+                                          Width: =44
+                              - galTrzPasos:
+                                  Control: Gallery
+                                  Variant: Vertical
+                                  Properties:
+                                    AccessibleLabel: ="Pasos de la traza seleccionada"
+                                    Fill: =colPanel
+                                    Height: =160
+                                    Items: =SortByColumns(Filter(colPasos, trazaId = fxTraza.id), "orden")
+                                    LayoutMinHeight: =90
+                                    LayoutMinWidth: =0
+                                    TabIndex: =0
+                                    TemplatePadding: =6
+                                    TemplateSize: =84
+                                    Visible: =CountRows(colTrazas) > 0
+                                  Children:
+                                    - conTrzFila:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          DropShadow: =DropShadow.None
+                                          Fill: =colPanel2
+                                          Height: =Parent.TemplateHeight
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =10
+                                          PaddingBottom: =6
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =6
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Parent.TemplateWidth
+                                        Children:
+                                          - lblTrzIcono:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Center
+                                                AlignInContainer: =AlignInContainer.Start
+                                                Color: =Switch(ThisItem.estado, "ok", colVerde, "limited", colAmbar, "pending", colAmbar, colRojo)
+                                                Font: =Font.'Segoe UI'
+                                                Height: =28
+                                                LayoutMinHeight: =28
+                                                LayoutMinWidth: =28
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =14.4
+                                                Text: |-
+                                                  =Switch(ThisItem.estado, "ok", "✓", "blocked", "⛔", "limited", "⏱", "egress", "🚫", "error", "⚠", "…")
+                                                Width: =28
+                                                Wrap: =false
+                                          - conTrzTexto:
+                                              Control: GroupContainer
+                                              Variant: AutoLayout
+                                              Properties:
+                                                DropShadow: =DropShadow.None
+                                                LayoutAlignItems: =LayoutAlignItems.Stretch
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                              Children:
+                                                - lblTrzEtiqueta:
+                                                    Control: Label
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      Color: =colTexto
+                                                      Font: =Font.'Segoe UI'
+                                                      FontWeight: =FontWeight.Semibold
+                                                      Height: =24
+                                                      LayoutMinHeight: =24
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =12.6
+                                                      Text: =ThisItem.etiqueta
+                                                      Wrap: =false
+                                                - lblTrzDetalle:
+                                                    Control: Label
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      Color: =colApagado
+                                                      FillPortions: =1
+                                                      Font: =Font.'Courier New'
+                                                      Height: =44
+                                                      LayoutMinHeight: =44
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =12.6
+                                                      Text: =ThisItem.detalle
+                        - conGateway:
+                            Control: GroupContainer
+                            Variant: AutoLayout
+                            Properties:
+                              BorderColor: =colLinea
+                              BorderThickness: =1
+                              DropShadow: =DropShadow.None
+                              Fill: =colPanel
+                              FillPortions: =60
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =12
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              LayoutOverflowY: =LayoutOverflow.Scroll
+                              PaddingBottom: =16
+                              PaddingLeft: =18
+                              PaddingRight: =18
+                              PaddingTop: =16
+                              RadiusBottomLeft: =14
+                              RadiusBottomRight: =14
+                              RadiusTopLeft: =14
+                              RadiusTopRight: =14
+                            Children:
+                              - lblGwTitulo:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colTexto
+                                    Font: =Font.'Segoe UI'
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =28
+                                    LayoutMinHeight: =28
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =14.4
+                                    Text: ="Gateway · controles en vivo"
+                                    Wrap: =false
+                              - lblGwError:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colRojo
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =4
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =4
+                                    Size: =12.6
+                                    Text: ="⚠ " & varGwError
+                                    Visible: =!IsBlank(varGwError)
+                              - conGwTodo:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    BorderColor: =If(varGw.blockedAll, colRojo, colLinea)
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    Height: =52
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMaxHeight: =52
+                                    LayoutMinHeight: =52
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =4
+                                    PaddingLeft: =12
+                                    PaddingRight: =12
+                                    PaddingTop: =4
+                                    RadiusBottomLeft: =10
+                                    RadiusBottomRight: =10
+                                    RadiusTopLeft: =10
+                                    RadiusTopRight: =10
+                                  Children:
+                                    - togGwTodo:
+                                        Control: ModernToggle
+                                        Properties:
+                                          AccessibleLabel: ="Bloquear todo el servidor MCP"
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =colTexto
+                                          Default: =varGw.blockedAll
+                                          DisplayMode: =If(IsBlank(varGw), DisplayMode.Disabled, DisplayMode.Edit)
+                                          FillPortions: =1
+                                          Font: =Font.'Lato Black'
+                                          Height: =44
+                                          Label: ="mcp-blocked · todo el servidor MCP"
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnCheck: |-
+                                            =If(
+                                              Not(varGw.blockedAll),
+                                              Set(varCambiando, true);
+                                              Set(varGwError, "");
+                                              Set(varGw, Patch(varGw, {blockedAll: true}));
+                                              IfError(
+                                                Set(varGw, GlobalDemoControl.SetBlockedAll(true)),
+                                                Set(varGwError, FirstError.Message);
+                                                IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                              );
+                                              Set(varCambiando, false);
+                                              IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                            )
+                                          OnUncheck: |-
+                                            =If(
+                                              varGw.blockedAll,
+                                              Set(varCambiando, true);
+                                              Set(varGwError, "");
+                                              Set(varGw, Patch(varGw, {blockedAll: false}));
+                                              IfError(
+                                                Set(varGw, GlobalDemoControl.SetBlockedAll(false)),
+                                                Set(varGwError, FirstError.Message);
+                                                IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                              );
+                                              Set(varCambiando, false);
+                                              IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                            )
+                                          Size: =14
+                                          Tooltip: ="Bloquea todas las tools del servidor MCP en API Management"
+                              - galGwTools:
+                                  Control: Gallery
+                                  Variant: Vertical
+                                  Properties:
+                                    AccessibleLabel: ="Tools del servidor MCP, una alternancia por tool"
+                                    Fill: =colPanel
+                                    FillPortions: =0
+                                    Height: =200
+                                    Items: =colTools
+                                    LayoutMinHeight: =200
+                                    LayoutMinWidth: =0
+                                    TabIndex: =0
+                                    TemplatePadding: =6
+                                    TemplateSize: =52
+                                  Children:
+                                    - conGwFila:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          BorderColor: =If(ThisItem.name in varGw.blockedTools.Value || varGw.blockedAll, colRojo, colLinea)
+                                          BorderThickness: =1
+                                          DropShadow: =DropShadow.None
+                                          Fill: =colPanel2
+                                          Height: =Parent.TemplateHeight
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          PaddingBottom: =4
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =4
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Parent.TemplateWidth
+                                        Children:
+                                          - togGwTool:
+                                              Control: ModernToggle
+                                              Properties:
+                                                AccessibleLabel: ="Bloquear la tool " & ThisItem.name
+                                                AlignInContainer: =AlignInContainer.Stretch
+                                                Color: =colTexto
+                                                Default: =ThisItem.name in varGw.blockedTools.Value
+                                                DisplayMode: =If(IsBlank(varGw) || varGw.blockedAll, DisplayMode.Disabled, DisplayMode.Edit)
+                                                FillPortions: =1
+                                                Font: =Font.'Lato Black'
+                                                Height: =44
+                                                Label: =ThisItem.name
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =0
+                                                OnCheck: |-
+                                                  =If(
+                                                    Not(varGw.blockedAll) && Not(ThisItem.name in varGw.blockedTools.Value),
+                                                    Set(varCambiando, true);
+                                                    Set(varGwError, "");
+                                                    Set(varGw, Patch(varGw, {blockedTools: Table(varGw.blockedTools, {Value: ThisItem.name})}));
+                                                    IfError(
+                                                      Set(varGw, GlobalDemoControl.SetBlockedTools(varGw.blockedTools)),
+                                                      Set(varGwError, FirstError.Message);
+                                                      IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                                    );
+                                                    Set(varCambiando, false);
+                                                    IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                                  )
+                                                OnUncheck: |-
+                                                  =If(
+                                                    Not(varGw.blockedAll) && ThisItem.name in varGw.blockedTools.Value,
+                                                    Set(varCambiando, true);
+                                                    Set(varGwError, "");
+                                                    Set(varGw, Patch(varGw, {blockedTools: Filter(varGw.blockedTools, Value <> ThisItem.name)}));
+                                                    IfError(
+                                                      Set(varGw, GlobalDemoControl.SetBlockedTools(varGw.blockedTools)),
+                                                      Set(varGwError, FirstError.Message);
+                                                      IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                                    );
+                                                    Set(varCambiando, false);
+                                                    IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                                  )
+                                                Size: =14
+                                                Tooltip: =ThisItem.description
+                              - conGwLimite:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    BorderColor: =If(varGw.rateLimit > 0, colAmbar, colLinea)
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =8
+                                    LayoutMinHeight: =124
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =8
+                                    PaddingLeft: =12
+                                    PaddingRight: =12
+                                    PaddingTop: =8
+                                    RadiusBottomLeft: =10
+                                    RadiusBottomRight: =10
+                                    RadiusTopLeft: =10
+                                    RadiusTopRight: =10
+                                  Children:
+                                    - togGwLimite:
+                                        Control: ModernToggle
+                                        Properties:
+                                          AccessibleLabel: ="Activar el límite de llamadas por minuto"
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =colTexto
+                                          Default: =varGw.rateLimit > 0
+                                          DisplayMode: =If(IsBlank(varGw), DisplayMode.Disabled, DisplayMode.Edit)
+                                          Font: =Font.'Courier New'
+                                          Height: =44
+                                          Label: ="mcp-rate-limit · límite de llamadas"
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnCheck: |-
+                                            =If(
+                                              Not(varGw.rateLimit > 0),
+                                              Set(varCambiando, true);
+                                              Set(varGwError, "");
+                                              Set(varGw, Patch(varGw, {rateLimit: varLimiteBorrador}));
+                                              IfError(
+                                                Set(varGw, GlobalDemoControl.SetRateLimit(varLimiteBorrador)),
+                                                Set(varGwError, FirstError.Message);
+                                                IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                              );
+                                              Set(varCambiando, false);
+                                              IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                            )
+                                          OnUncheck: |-
+                                            =If(
+                                              varGw.rateLimit > 0,
+                                              Set(varCambiando, true);
+                                              Set(varGwError, "");
+                                              Set(varGw, Patch(varGw, {rateLimit: 0}));
+                                              IfError(
+                                                Set(varGw, GlobalDemoControl.SetRateLimit(0)),
+                                                Set(varGwError, FirstError.Message);
+                                                IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                              );
+                                              Set(varCambiando, false);
+                                              IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                            )
+                                          Size: =12.6
+                                          Tooltip: ="Limita las llamadas por minuto en API Management"
+                                    - conGwStepper:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =8
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                        Children:
+                                          - btnGwMenos:
+                                              Control: Classic/Button
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                AutoDisableOnSelect: =false
+                                                BorderColor: =colLinea
+                                                BorderThickness: =1
+                                                Color: =colTexto
+                                                DisplayMode: =If(IsBlank(varGw) || varLimiteBorrador <= 1, DisplayMode.Disabled, DisplayMode.Edit)
+                                                Fill: =colPanel
+                                                FocusedBorderColor: =colTexto
+                                                Font: =Font.'Segoe UI'
+                                                Height: =44
+                                                HoverBorderColor: =colLinea
+                                                HoverColor: =colTexto
+                                                HoverFill: =colLinea
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =44
+                                                OnSelect: |-
+                                                  =Set(varLimiteBorrador, Max(1, varLimiteBorrador - 1));
+                                                  If(
+                                                    varGw.rateLimit > 0,
+                                                    Set(varCambiando, true);
+                                                    Set(varGwError, "");
+                                                    Set(varGw, Patch(varGw, {rateLimit: varLimiteBorrador}));
+                                                    IfError(
+                                                      Set(varGw, GlobalDemoControl.SetRateLimit(varLimiteBorrador)),
+                                                      Set(varGwError, FirstError.Message);
+                                                      IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                                    );
+                                                    Set(varCambiando, false)
+                                                  )
+                                                PressedBorderColor: =colLinea
+                                                PressedColor: =colTexto
+                                                PressedFill: =colLinea
+                                                RadiusBottomLeft: =8
+                                                RadiusBottomRight: =8
+                                                RadiusTopLeft: =8
+                                                RadiusTopRight: =8
+                                                Size: =14.4
+                                                Text: ="−"
+                                                Tooltip: ="Reducir el límite de llamadas por minuto"
+                                                Width: =44
+                                          - lblGwLimite:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Center
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =If(varGw.rateLimit > 0, colAmbar, colApagado)
+                                                FillPortions: =1
+                                                Font: =Font.'Courier New'
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =0
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =varLimiteBorrador & " llamadas / minuto"
+                                                Wrap: =false
+                                          - btnGwMas:
+                                              Control: Classic/Button
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                AutoDisableOnSelect: =false
+                                                BorderColor: =colLinea
+                                                BorderThickness: =1
+                                                Color: =colTexto
+                                                DisplayMode: =If(IsBlank(varGw) || varLimiteBorrador >= 600, DisplayMode.Disabled, DisplayMode.Edit)
+                                                Fill: =colPanel
+                                                FocusedBorderColor: =colTexto
+                                                Font: =Font.'Segoe UI'
+                                                Height: =44
+                                                HoverBorderColor: =colLinea
+                                                HoverColor: =colTexto
+                                                HoverFill: =colLinea
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =44
+                                                OnSelect: |-
+                                                  =Set(varLimiteBorrador, Min(600, varLimiteBorrador + 1));
+                                                  If(
+                                                    varGw.rateLimit > 0,
+                                                    Set(varCambiando, true);
+                                                    Set(varGwError, "");
+                                                    Set(varGw, Patch(varGw, {rateLimit: varLimiteBorrador}));
+                                                    IfError(
+                                                      Set(varGw, GlobalDemoControl.SetRateLimit(varLimiteBorrador)),
+                                                      Set(varGwError, FirstError.Message);
+                                                      IfError(Set(varGw, GlobalDemoControl.GetState()), Blank())
+                                                    );
+                                                    Set(varCambiando, false)
+                                                  )
+                                                PressedBorderColor: =colLinea
+                                                PressedColor: =colTexto
+                                                PressedFill: =colLinea
+                                                RadiusBottomLeft: =8
+                                                RadiusBottomRight: =8
+                                                RadiusTopLeft: =8
+                                                RadiusTopRight: =8
+                                                Size: =14.4
+                                                Text: ="+"
+                                                Tooltip: ="Aumentar el límite de llamadas por minuto"
+                                                Width: =44
+                              - lblGwPista:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colApagado
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: |-
+                                      ="Bloquear una tool cambia una named value en API Management (igual que el límite de llamadas)" & If(IsBlank(varGw.apim), "", " (" & varGw.apim & ")") & ": ni el agente ni el MCP se tocan."
+                              - conGwProbador:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    BorderColor: =colLinea
+                                    BorderThickness: =1
+                                    DropShadow: =DropShadow.None
+                                    Fill: =colPanel2
+                                    FillPortions: =0
+                                    LayoutAlignItems: =LayoutAlignItems.Stretch
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =8
+                                    LayoutMinHeight: =290
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =8
+                                    PaddingLeft: =12
+                                    PaddingRight: =12
+                                    PaddingTop: =8
+                                    RadiusBottomLeft: =10
+                                    RadiusBottomRight: =10
+                                    RadiusTopLeft: =10
+                                    RadiusTopRight: =10
+                                  Children:
+                                    - lblGwProbadorTitulo:
+                                        Control: Label
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Color: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =28
+                                          LayoutMinHeight: =28
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Size: =12.6
+                                          Text: ="Probar una tool"
+                                          Wrap: =false
+                                    - conGwProbarFila:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =8
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                        Children:
+                                          - ddGwTool:
+                                              Control: ModernDropdown
+                                              Properties:
+                                                AccessibleLabel: ="Tool que se va a probar"
+                                                AlignInContainer: =AlignInContainer.Center
+                                                BorderColor: =colLinea
+                                                BorderThickness: =1
+                                                Color: =colTexto
+                                                Default: =First(colTools)
+                                                DisplayMode: =If(varProbando, DisplayMode.Disabled, DisplayMode.Edit)
+                                                Fill: =colPanel
+                                                FillPortions: =2
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                ItemDisplayText: =ThisItem.name
+                                                Items: =colTools
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =0
+                                                Size: =12.6
+                                          - txtGwArgs:
+                                              Control: ModernTextInput
+                                              Properties:
+                                                AccessibleLabel: ="Argumentos de la tool en JSON"
+                                                AlignInContainer: =AlignInContainer.Center
+                                                BorderColor: =If(varArgsInvalidos, colRojo, colLinea)
+                                                BorderThickness: =1
+                                                Color: =colTexto
+                                                Default: =Coalesce(JSON(ddGwTool.Selected.sampleArgs), "{}")
+                                                DisplayMode: =If(varProbando, DisplayMode.Disabled, DisplayMode.Edit)
+                                                Fill: =colPanel
+                                                FillPortions: =3
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =0
+                                                OnChange: =Set(varArgsInvalidos, false)
+                                                Placeholder: ="Argumentos JSON"
+                                                Size: =12.6
+                                                ValidationState: =If(varArgsInvalidos, ValidationState.Error, ValidationState.None)
+                                    - btnGwProbar:
+                                        Control: ModernButton
+                                        Properties:
+                                          AccessibleLabel: ="Probar la tool seleccionada sin pasar por el agente"
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Appearance: =ButtonAppearance.Outline
+                                          BorderColor: =colCian
+                                          BorderThickness: =1
+                                          Color: =colCian
+                                          DisplayMode: =If(varProbando || IsBlank(ddGwTool.Selected), DisplayMode.Disabled, DisplayMode.Edit)
+                                          Font: =Font.'Segoe UI'
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =44
+                                          Layout: =ButtonLayout.TextOnly
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnSelect: |-
+                                            =Set(varArgsInvalidos, IsError(ParseJSON(txtGwArgs.Text)));
+                                            If(
+                                              Not(varArgsInvalidos) && Not(IsBlank(ddGwTool.Selected)),
+                                              Set(varProbando, true);
+                                              Set(varNuevaTraza, Coalesce(Max(colTrazas, id), 0) + 1);
+                                              Collect(colTrazas, {id: varNuevaTraza, titulo: "Probar " & ddGwTool.Selected.name, hora: Text(Now(), "hh:mm:ss"), ms: 0});
+                                              Collect(colPasos, {trazaId: varNuevaTraza, orden: 1, etiqueta: "Panel → " & If(varModo = "direct", "Backend (Container Apps)", "AI Gateway"), detalle: "tools/call " & ddGwTool.Selected.name & " " & txtGwArgs.Text, estado: "ok"});
+                                              Set(varTrazaIdx, 0);
+                                              IfError(
+                                                If(
+                                                  ddGwTool.Selected.name = "buscar_vuelo" || ddGwTool.Selected.name = "estado_llegada",
+                                                  Set(varUltimoResultado, GlobalDemoControl.TestTool(ddGwTool.Selected.name, varModo, {numeroVuelo: Text(ParseJSON(txtGwArgs.Text).numeroVuelo)})),
+                                                  ddGwTool.Selected.name = "vuelos_por_ruta",
+                                                  Set(varUltimoResultado, GlobalDemoControl.TestTool(ddGwTool.Selected.name, varModo, {origen: Text(ParseJSON(txtGwArgs.Text).origen), destino: Text(ParseJSON(txtGwArgs.Text).destino), limite: Value(ParseJSON(txtGwArgs.Text).limite)})),
+                                                  ddGwTool.Selected.name = "llegadas_aeropuerto",
+                                                  Set(varUltimoResultado, GlobalDemoControl.TestTool(ddGwTool.Selected.name, varModo, {iata: Text(ParseJSON(txtGwArgs.Text).iata), limite: Value(ParseJSON(txtGwArgs.Text).limite)})),
+                                                  Set(varUltimoResultado, GlobalDemoControl.TestTool(ddGwTool.Selected.name, varModo, {texto: Text(ParseJSON(txtGwArgs.Text).texto)}))
+                                                ),
+                                                Set(varUltimoResultado, {body: FirstError.Message, mode: varModo, ms: 0, outcome: "error", status: 0})
+                                              );
+                                              With(
+                                                {r: varUltimoResultado, n: varNuevaTraza, t: ddGwTool.Selected.name},
+                                                If(
+                                                  r.status = 403,
+                                                  Collect(colPasos, {trazaId: n, orden: 2, etiqueta: "AI Gateway · policy de bloqueo", detalle: "403 · " & t & " bloqueada, no llega al MCP", estado: "blocked"}),
+                                                  r.status = 429,
+                                                  Collect(colPasos, {trazaId: n, orden: 2, etiqueta: "AI Gateway · rate limit", detalle: "429 · límite de " & varGw.rateLimit & " llamadas/min superado, no llega al MCP", estado: "limited"}),
+                                                  r.status = 401,
+                                                  Collect(colPasos, {trazaId: n, orden: 2, etiqueta: If(varModo = "direct", "Backend cerrado", "AI Gateway rechaza la clave"), detalle: If(varModo = "direct", "401 · solo acepta la clave de backend que inyecta el gateway", "401 · falta o es incorrecta la clave x-mcp-key"), estado: "blocked"}),
+                                                  r.outcome = "ok",
+                                                  If(varModo = "gateway", Collect(colPasos, {trazaId: n, orden: 2, etiqueta: "AI Gateway → MCP (Container Apps)", detalle: "clave de backend inyectada", estado: "ok"}));
+                                                  Collect(colPasos, {trazaId: n, orden: 3, etiqueta: "MCP → AviationStack", detalle: r.status & " · " & r.ms & " ms", estado: "ok"}),
+                                                  Collect(colPasos, {trazaId: n, orden: 2, etiqueta: "Error", detalle: "HTTP " & r.status & " · " & Left(r.body, 160), estado: "error"})
+                                                )
+                                              );
+                                              Patch(colTrazas, LookUp(colTrazas, id = varNuevaTraza), {ms: varUltimoResultado.ms});
+                                              Set(varProbando, false);
+                                              IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                                            )
+                                          Size: =12.6
+                                          Text: =If(varProbando, "Probando…", If(varModo = "direct", "Probar directo", "Probar sin agente"))
+                                    - lblGwResultado:
+                                        Control: Label
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          BorderColor: =If(varUltimoResultado.mode = "", colLinea, If(varUltimoResultado.outcome = "ok", colVerde, If(varUltimoResultado.status = 429 || varUltimoResultado.outcome = "rate_limited", colAmbar, colRojo)))
+                                          BorderThickness: =1
+                                          Color: =If(varUltimoResultado.mode = "", colApagado, If(varUltimoResultado.outcome = "ok", colVerde, If(varUltimoResultado.status = 429 || varUltimoResultado.outcome = "rate_limited", colAmbar, colRojo)))
+                                          Font: =Font.'Courier New'
+                                          Height: =120
+                                          LayoutMinHeight: =120
+                                          LayoutMinWidth: =0
+                                          PaddingBottom: =8
+                                          PaddingLeft: =10
+                                          PaddingRight: =10
+                                          PaddingTop: =8
+                                          Size: =12.6
+                                          Text: =If(varUltimoResultado.mode = "", "Elige una tool y pulsa el botón para ver el resultado.", If(varUltimoResultado.mode = "direct", "Directo", "Gateway") & " · HTTP " & varUltimoResultado.status & " · " & varUltimoResultado.ms & " ms" & Char(10) & varUltimoResultado.body)
+                              - conGwPestanas:
+                                  Control: GroupContainer
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutGap: =8
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                  Children:
+                                    - btnGwPeticiones:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =If(varPestana = "requests", colFondo, colTexto)
+                                          Fill: =If(varPestana = "requests", colCian, colPanel2)
+                                          FillPortions: =1
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =If(varPestana = "requests", colFondo, colTexto)
+                                          HoverFill: =If(varPestana = "requests", colCian, colLinea)
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnSelect: =Set(varPestana, "requests")
+                                          PressedBorderColor: =colLinea
+                                          PressedColor: =colFondo
+                                          PressedFill: =colCian
+                                          RadiusBottomLeft: =8
+                                          RadiusBottomRight: =8
+                                          RadiusTopLeft: =8
+                                          RadiusTopRight: =8
+                                          Size: =12.6
+                                          Text: ="Peticiones"
+                                          Tooltip: ="Últimas peticiones del panel"
+                                    - btnGwAuditoria:
+                                        Control: Classic/Button
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          AutoDisableOnSelect: =false
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          Color: =If(varPestana = "audit", colFondo, colTexto)
+                                          Fill: =If(varPestana = "audit", colCian, colPanel2)
+                                          FillPortions: =1
+                                          FocusedBorderColor: =colTexto
+                                          Font: =Font.'Segoe UI'
+                                          Height: =44
+                                          HoverBorderColor: =colLinea
+                                          HoverColor: =If(varPestana = "audit", colFondo, colTexto)
+                                          HoverFill: =If(varPestana = "audit", colCian, colLinea)
+                                          LayoutMinHeight: =44
+                                          LayoutMinWidth: =0
+                                          OnSelect: |-
+                                            =Set(varPestana, "audit");
+                                            IfError(
+                                              Set(varAuditResp, GlobalDemoControl.GetAudit({minutes: 60}));
+                                              Set(varAuditCfg, varAuditResp.configured);
+                                              ClearCollect(colAudit, varAuditResp.entries),
+                                              Blank()
+                                            )
+                                          PressedBorderColor: =colLinea
+                                          PressedColor: =colFondo
+                                          PressedFill: =colCian
+                                          RadiusBottomLeft: =8
+                                          RadiusBottomRight: =8
+                                          RadiusTopLeft: =8
+                                          RadiusTopRight: =8
+                                          Size: =12.6
+                                          Text: ="Auditoría"
+                                          Tooltip: ="Auditoría del gateway (Application Insights)"
+                              - lblGwSinPeticiones:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colApagado
+                                    Font: =Font.'Segoe UI'
+                                    Height: =44
+                                    LayoutMinHeight: =44
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: ="Aún no hay peticiones."
+                                    Visible: =varPestana = "requests" && CountRows(colRequests) = 0
+                              - galGwPeticiones:
+                                  Control: Gallery
+                                  Variant: Vertical
+                                  Properties:
+                                    AccessibleLabel: ="Últimas peticiones del panel"
+                                    Fill: =colPanel
+                                    FillPortions: =0
+                                    Height: =220
+                                    Items: =colRequests
+                                    LayoutMinHeight: =220
+                                    LayoutMinWidth: =0
+                                    TabIndex: =0
+                                    TemplatePadding: =4
+                                    TemplateSize: =52
+                                    Visible: =varPestana = "requests" && CountRows(colRequests) > 0
+                                  Children:
+                                    - conGwPetFila:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          DropShadow: =DropShadow.None
+                                          Fill: =colPanel2
+                                          Height: =Parent.TemplateHeight
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =8
+                                          PaddingBottom: =4
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =4
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Parent.TemplateWidth
+                                        Children:
+                                          - lblGwPetHora:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colApagado
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =84
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =Text(ThisItem.at, "hh:mm:ss")
+                                                Width: =84
+                                                Wrap: =false
+                                          - lblGwPetTipo:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colMorado
+                                                Font: =Font.'Segoe UI'
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =70
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =ThisItem.kind
+                                                Width: =70
+                                                Wrap: =false
+                                          - lblGwPetDetalle:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colTexto
+                                                FillPortions: =1
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =0
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =ThisItem.detail
+                                                Tooltip: =ThisItem.detail
+                                                Wrap: =false
+                                          - lblGwPetCodigo:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Center
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =Switch(ThisItem.outcome, "ok", colVerde, "limited", colAmbar, "rate_limited", colAmbar, "pending", colApagado, colRojo)
+                                                Font: =Font.'Courier New'
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =44
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =If(ThisItem.status = 0, "—", Text(ThisItem.status))
+                                                Width: =44
+                                                Wrap: =false
+                                          - lblGwPetMs:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Right
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colApagado
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =76
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =ThisItem.ms & " ms"
+                                                Width: =76
+                                                Wrap: =false
+                              - lblGwAuditoriaAviso:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colApagado
+                                    Font: =Font.'Segoe UI'
+                                    Height: =66
+                                    LayoutMinHeight: =66
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: |-
+                                      =If(Not(varAuditCfg), "Falta Control__AppInsights: ejecuta deploy/setup-audit.sh y arranca con deploy/run-control.sh.", "Sin llamadas en la última hora (Application Insights tarda unos minutos).")
+                                    Visible: =varPestana = "audit" && (Not(varAuditCfg) || CountRows(colAudit) = 0)
+                              - galGwAuditoria:
+                                  Control: Gallery
+                                  Variant: Vertical
+                                  Properties:
+                                    AccessibleLabel: ="Auditoría de llamadas al gateway"
+                                    Fill: =colPanel
+                                    FillPortions: =0
+                                    Height: =220
+                                    Items: =colAudit
+                                    LayoutMinHeight: =220
+                                    LayoutMinWidth: =0
+                                    TabIndex: =0
+                                    TemplatePadding: =4
+                                    TemplateSize: =68
+                                    Visible: =varPestana = "audit" && varAuditCfg && CountRows(colAudit) > 0
+                                  Children:
+                                    - conGwAudFila:
+                                        Control: GroupContainer
+                                        Variant: AutoLayout
+                                        Properties:
+                                          BorderColor: =colLinea
+                                          BorderThickness: =1
+                                          DropShadow: =DropShadow.None
+                                          Fill: =colPanel2
+                                          Height: =Parent.TemplateHeight
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =8
+                                          PaddingBottom: =4
+                                          PaddingLeft: =12
+                                          PaddingRight: =12
+                                          PaddingTop: =4
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Parent.TemplateWidth
+                                        Children:
+                                          - lblGwAudHora:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colApagado
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =84
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =Text(ThisItem.at, "hh:mm:ss")
+                                                Width: =84
+                                                Wrap: =false
+                                          - lblGwAudCliente:
+                                              Control: Label
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colMorado
+                                                Font: =Font.'Segoe UI'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =80
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =If(IsBlank(ThisItem.client), "—", ThisItem.client)
+                                                Tooltip: =If(IsBlank(ThisItem.client), "Cliente desconocido", ThisItem.client)
+                                                Width: =80
+                                                Wrap: =false
+                                          - conGwAudTool:
+                                              Control: GroupContainer
+                                              Variant: AutoLayout
+                                              Properties:
+                                                DropShadow: =DropShadow.None
+                                                LayoutAlignItems: =LayoutAlignItems.Stretch
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutJustifyContent: =LayoutJustifyContent.Center
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                              Children:
+                                                - lblGwAudNombre:
+                                                    Control: Label
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      Color: =colTexto
+                                                      Font: =Font.'Courier New'
+                                                      FontWeight: =FontWeight.Semibold
+                                                      Height: =24
+                                                      LayoutMinHeight: =24
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =12.6
+                                                      Text: =ThisItem.tool
+                                                      Wrap: =false
+                                                - lblGwAudArgs:
+                                                    Control: Label
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      Color: =colApagado
+                                                      Font: =Font.'Courier New'
+                                                      Height: =24
+                                                      LayoutMinHeight: =24
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =12.6
+                                                      Text: =ThisItem.args
+                                                      Tooltip: =ThisItem.args
+                                                      Wrap: =false
+                                          - lblGwAudCodigo:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Center
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =colApagado
+                                                Font: =Font.'Courier New'
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =44
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =If(ThisItem.status = 0, "—", Text(ThisItem.status))
+                                                Width: =44
+                                                Wrap: =false
+                                          - lblGwAudResultado:
+                                              Control: Label
+                                              Properties:
+                                                Align: =Align.Right
+                                                AlignInContainer: =AlignInContainer.Center
+                                                Color: =Switch(ThisItem.outcome, "allowed", colVerde, "rate_limited", colAmbar, colRojo)
+                                                Font: =Font.'Segoe UI'
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =44
+                                                LayoutMinHeight: =44
+                                                LayoutMinWidth: =120
+                                                PaddingBottom: =0
+                                                PaddingLeft: =0
+                                                PaddingRight: =0
+                                                PaddingTop: =0
+                                                Size: =12.6
+                                                Text: =Switch(ThisItem.outcome, "allowed", "permitida", "blocked_tool", "tool bloqueada", "blocked_server", "servidor bloqueado", "rate_limited", "límite", ThisItem.outcome)
+                                                Width: =120
+                                                Wrap: =false
+                              - lblGwAuditoriaPie:
+                                  Control: Label
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Color: =colApagado
+                                    Font: =Font.'Segoe UI'
+                                    Height: =66
+                                    LayoutMinHeight: =66
+                                    LayoutMinWidth: =0
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =12.6
+                                    Text: |-
+                                      ="Quién llamó, a qué tool y con qué argumentos: trazas del gateway en Application Insights (retraso de unos minutos)."
+                                    Visible: =varPestana = "audit"
+            - tmrEstado:
+                Control: Timer
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  AutoStart: =true
+                  Duration: =5000
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  OnTimerEnd: |-
+                    =If(
+                      Not(varCambiando),
+                      IfError(
+                        Set(varGw, GlobalDemoControl.GetState());
+                        Set(varGwError, ""),
+                        Set(varGwError, FirstError.Message)
+                      );
+                      IfError(ClearCollect(colRequests, GlobalDemoControl.GetRequests()), Blank())
+                    )
+                  Repeat: =true
+                  Visible: =false
+            - tmrGuardrail:
+                Control: Timer
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  AutoStart: =true
+                  Duration: =30000
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  OnTimerEnd: |-
+                    =IfError(
+                      Set(varGuardrail, GlobalDemoControl.GetGuardrail()),
+                      Set(varGuardrail, Blank())
+                    )
+                  Repeat: =true
+                  Visible: =false
+            - tmrAuditoria:
+                Control: Timer
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  Duration: =15000
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  OnTimerEnd: |-
+                    =IfError(
+                      Set(varAuditResp, GlobalDemoControl.GetAudit({minutes: 60}));
+                      Set(varAuditCfg, varAuditResp.configured);
+                      ClearCollect(colAudit, varAuditResp.entries),
+                      Blank()
+                    )
+                  Repeat: =true
+                  Start: =varPestana = "audit"
+                  Visible: =false
