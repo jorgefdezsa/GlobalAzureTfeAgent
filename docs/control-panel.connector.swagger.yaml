@@ -1,0 +1,285 @@
+# Definición del conector personalizado «GlobalDemoControl» (Power Platform) sobre el backend del panel (GlobalDemo.Control).
+# Importar en make.powerapps.com → Datos → Conectores personalizados → Nuevo → Importar una definición de OpenAPI.
+#   1. Sustituye `host` por el FQDN que imprime deploy/deploy-control.sh (CONTROL_PANEL_URL, sin https://).
+#   2. En Seguridad, la autenticación es «Clave de API», con la etiqueta del parámetro «Clave del panel», nombre x-panel-key, en la cabecera.
+#   3. Al crear la conexión, pega el valor de CONTROL_PANEL_KEY (`azd env get-value CONTROL_PANEL_KEY`).
+swagger: '2.0'
+info:
+  title: GlobalDemoControl
+  description: Backend del panel de control de la demo (AI Gateway, guardrail, auditoría y chat con el agente).
+  version: '1.0'
+host: control-panel.nicesand-7420aaa1.westeurope.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  panelKey:
+    type: apiKey
+    in: header
+    name: x-panel-key
+security:
+  - panelKey: []
+paths:
+  /api/tools:
+    get:
+      operationId: GetTools
+      summary: Tools del servidor MCP
+      responses:
+        '200':
+          description: Catálogo de tools
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tool'
+  /api/state:
+    get:
+      operationId: GetState
+      summary: Estado de los interruptores del gateway
+      responses:
+        '200':
+          description: Estado
+          schema:
+            $ref: '#/definitions/GatewayState'
+  /api/guardrail:
+    get:
+      operationId: GetGuardrail
+      summary: Estado de la RAI policy (guardrail y egress)
+      responses:
+        '200':
+          description: Estado de la policy
+          schema:
+            $ref: '#/definitions/Guardrail'
+  /api/requests:
+    get:
+      operationId: GetRequests
+      summary: Últimas peticiones del panel
+      responses:
+        '200':
+          description: Peticiones
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LogEntry'
+  /api/audit:
+    get:
+      operationId: GetAudit
+      summary: Auditoría del gateway (Application Insights)
+      parameters:
+        - name: minutes
+          in: query
+          required: false
+          type: integer
+          default: 60
+          x-ms-summary: Minutos hacia atrás
+      responses:
+        '200':
+          description: Auditoría
+          schema:
+            $ref: '#/definitions/AuditResult'
+  /api/blocks/all:
+    post:
+      operationId: SetBlockedAll
+      summary: Bloquear o desbloquear todo el servidor MCP
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: [blocked]
+            properties:
+              blocked:
+                type: boolean
+                x-ms-summary: Bloqueado
+      responses:
+        '200':
+          description: Estado resultante
+          schema:
+            $ref: '#/definitions/GatewayState'
+  /api/blocks/tools:
+    post:
+      operationId: SetBlockedTools
+      summary: Fijar las tools bloqueadas
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: [tools]
+            properties:
+              tools:
+                type: array
+                x-ms-summary: Tools bloqueadas
+                items:
+                  type: string
+      responses:
+        '200':
+          description: Estado resultante
+          schema:
+            $ref: '#/definitions/GatewayState'
+  /api/limits:
+    post:
+      operationId: SetRateLimit
+      summary: Fijar el límite de llamadas por minuto (0 = sin límite)
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: [callsPerMinute]
+            properties:
+              callsPerMinute:
+                type: integer
+                minimum: 0
+                maximum: 600
+                x-ms-summary: Llamadas por minuto
+      responses:
+        '200':
+          description: Estado resultante
+          schema:
+            $ref: '#/definitions/GatewayState'
+  /api/tool-test:
+    post:
+      operationId: TestTool
+      summary: Probar una tool sin agente
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: [tool, mode]
+            properties:
+              tool:
+                type: string
+                x-ms-summary: Tool
+              arguments:
+                type: object
+                x-ms-summary: Argumentos
+              mode:
+                type: string
+                enum: [gateway, direct]
+                x-ms-summary: Ruta
+      responses:
+        '200':
+          description: Resultado de la llamada
+          schema:
+            $ref: '#/definitions/ToolResult'
+  /api/chat-sync:
+    post:
+      operationId: ChatSync
+      summary: Preguntar al agente (sin streaming)
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                x-ms-summary: Mensaje
+              previousResponseId:
+                type: string
+                x-ms-summary: Id de la respuesta anterior
+      responses:
+        '200':
+          description: Respuesta del agente
+          schema:
+            $ref: '#/definitions/ChatSyncResponse'
+definitions:
+  Tool:
+    type: object
+    properties:
+      name: {type: string}
+      description: {type: string}
+      sampleArgs: {type: object}
+  GatewayState:
+    type: object
+    properties:
+      blockedAll: {type: boolean}
+      blockedTools:
+        type: array
+        items: {type: string}
+      rateLimit: {type: integer}
+      agentConfigured: {type: boolean}
+      apim: {type: string}
+      priceInput: {type: number}
+      priceCached: {type: number}
+      priceOutput: {type: number}
+  Guardrail:
+    type: object
+    properties:
+      found: {type: boolean}
+      jailbreakBlocking: {type: boolean}
+      egressMode: {type: string}
+      allowedHosts:
+        type: array
+        items: {type: string}
+  LogEntry:
+    type: object
+    properties:
+      at: {type: string, format: date-time}
+      kind: {type: string}
+      detail: {type: string}
+      status: {type: integer, x-ms-visibility: advanced}
+      ms: {type: integer}
+      outcome: {type: string}
+  AuditEntry:
+    type: object
+    properties:
+      at: {type: string, format: date-time}
+      client: {type: string}
+      tool: {type: string}
+      args: {type: string}
+      outcome: {type: string}
+      status: {type: integer}
+  AuditResult:
+    type: object
+    properties:
+      configured: {type: boolean}
+      entries:
+        type: array
+        items:
+          $ref: '#/definitions/AuditEntry'
+  ToolResult:
+    type: object
+    properties:
+      mode: {type: string}
+      status: {type: integer}
+      ms: {type: integer}
+      outcome: {type: string}
+      body: {type: string}
+  ToolCall:
+    type: object
+    properties:
+      name: {type: string}
+      arguments: {type: string}
+      state: {type: string, description: 'ok, blocked, limited, egress, error o pending'}
+      detail: {type: string}
+  Usage:
+    type: object
+    properties:
+      input: {type: integer}
+      cached: {type: integer}
+      output: {type: integer}
+  ChatSyncResponse:
+    type: object
+    properties:
+      responseId: {type: string}
+      text: {type: string}
+      ms: {type: integer}
+      toolCalls:
+        type: array
+        items:
+          $ref: '#/definitions/ToolCall'
+      usage:
+        $ref: '#/definitions/Usage'
+      error: {type: string}
